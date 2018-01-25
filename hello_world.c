@@ -1,13 +1,16 @@
-#include <startup.h>
-#include <stdint.h>
+#include <stddef.h>
 
-ENTRY void _start()
+extern void PrintXY(unsigned int x, unsigned int y, const char *str);
+static const char HelloString[] = "- hello n64 -";
+static unsigned int x = 32;
+static unsigned int y = 32;
+
+void MainHook(void)
 {
-  void (*sm64_printf)(int x, int y, const char *format, ...) = (void*)0x802d66c0;
 
   // Lives back to normal position
-  sm64_printf(0x36, 0xD1, (void*)0x80338388, *(int16_t*)0x8033B260);
+  //PrintXY(0x36, 0xD1, (void*)0x80338388, *(int16_t*)0x8033B260);
 
   // Print hello world
-  sm64_printf(80, 80, "hello world");
+  PrintXY(x, y, HelloString);
 }
