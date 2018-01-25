@@ -13,7 +13,8 @@ N64 [toolchain](https://github.com/glankk/n64). If you're on Arch Linux, simply 
 ```
 yaourt -S mips64-gcc-n64
 ```
-and that should install all the proper dependencies. For now, I assume that
+and that should install all the proper dependencies. Otherwise, follow
+the instructions on the glank's repo. For now, I assume that
 you have installed the toolchain in `/opt/n64-dev`. Sorry about that, I'll fix
 this later.
 
