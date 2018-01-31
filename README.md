@@ -23,5 +23,6 @@ ROM, `cd` to the `patch` directory and run `gru make-rom.lua <your-sm64-rom-here
 
 ## Thanks
 
-Thanks to @kdjmonaghan for getting me started, @queueRAM for the general help, and of course @glankk
-for making gz in the first place.
+Thanks to [@kdjmonaghan](https://github.com/kdjmonaghan) for getting me started, 
+[@queueRAM](https://github.com/queueRAM) and for the general help and their immensely useful tools, 
+and of course [@glankk](https://github.com/glankk) for making gz in the first place.
