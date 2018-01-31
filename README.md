@@ -20,3 +20,8 @@ this later.
 
 To compile the practice hack, simply run `bash compile.sh`. Then, to patch the
 ROM, `cd` to the `patch` directory and run `gru make-rom.lua <your-sm64-rom-here>`.
+
+## Thanks
+
+Thanks to @kdjmonaghan for getting me started, @queueRAM for the general help, and of course @glankk
+for making gz in the first place.
