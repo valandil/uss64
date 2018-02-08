@@ -4,21 +4,27 @@
 // Description:  ASM code that links the trainer code in the ROM and then    //
 //               DMAs it to expansion pak memory.                            //
 //                                                                           //
-// We hook into the Main (0x1DF8) function of SM64, to DMA copy our payload  //
-// to expansion pak memory. We exploit the fact that the function starting at//
-// 0x80246050 is not used by SM64 to jump to that block of code from Main,   //
-// after osInitalize has been called, to use the DmaCopy function contained  //
-// in SM64 to DMA copy our payload in RAM.                                   //
+// We hook into the CopyScriptInterpreter (0x802789FC) function of SM64, to  //
+// DMA copy our payload to expansion pak memory. We exploit the fact that the//
+// function starting at 0x80246050 is not used by SM64 to jump to that block //
+// of code from CopyScriptInterpreter. This ensures that the OS has been     //
+// initialized, and that the message queues were setup properly (osInitalize //
+// and SetupMessageQueues are called from Main and Thread3_Main,             //
+// respectively). We use the DmaCopy function contained in SM64 to DMA copy  //
+// our payload in RAM.                                                       //
 // ------------------------------------------------------------------------- //
 
 .n64
 
-// RAM entry point is 0x80245000
+// Useful constants. Should be placed in another file
+// and modified for other versions of the game.
 ramEntryPoint equ 0x80245000
-romPadding    equ 0x007CC6C0
-hookPoint     equ 0x1E50
+dmaHook       equ 0x80246050
+romPadding    equ 0x007CC700
+hookPoint     equ 0x802789FC
+behaviourHook equ 0x0021CCE0
 
-.open "SM64-PracRom.z64", "SM64-PracRom-asm.z64", ramEntryPoint
+.open "SM64.z64", "SM64-PracRom-asm.z64", ramEntryPoint
 
 // Labels to be placed in a separate asm file eventually.
 // void PrintXY(unsigned int x, unsigned int y, const char *str);
@@ -27,35 +33,44 @@ hookPoint     equ 0x1E50
 // void DmaCopy(unsigned int RAM_offset, unsigned int ROM_bottom, unsigned int ROM_top);
 .definelabel DmaCopy, 0x80278504
 
-// Import the payload at the end of the ROM.
-.orga romPadding
-NewCodeVaddrStart:
-.importobj "../hello_world.o"
-NewCodeVaddrEnd:
+// Replace the unused space at 0x80246050 with our DMA.
+.org dmaHook
+LoadNewCodeInExpRam:
 
-// Hijack the init at ROM 0x1000 function to DMA our payload in RAM.
-// This should DMA from ROM 0x007CC6C0 to whatever size is 0x50 + the linked
-// hello_world.o object. It should then jump back to the old initialization
-// function.
-.orga hookPoint
-jal 0x80246050
+// Prepare the stack.
+addiu sp, sp, -0x18
+sw    ra, 0x0014(sp)
 
-.org 0x80246050
-addiu sp, sp, 0xFFE8
-sw $ra, 0x0014(sp)
-la a0, 0x80400000
-la a1, NewCodeVaddrStart - ramEntryPoint
-la a2, NewCodeVaddrEnd - ramEntryPoint
+// DMA the payload to exp. pak RAM.
+la    a0, NewCodeVaddrStart
+la    a1, NewCodeRomStart
+la    a2, NewCodeRomEnd
 jal DmaCopy
 nop
+
+// Restore the stack.
 lw ra, 0x0014(sp)
 jr ra
-nop
-addiu sp, sp, 0x0018
-nop
+addiu sp, sp, 0x18
 
-// replace unused Mario behavior with the our payload.
-.orga 0x21CCE0
-jal 0x80400000
+
+// Hijack SM64's Thread3_Main function, after the message queues
+// have been initialized.
+.org hookPoint
+jal LoadNewCodeInExpRam
+
+// Replace unused Mario behaviour with the our payload, executed at each frame.
+.orga behaviourHook
+.dw MainHook
+
+// Import the payload at the end of the ROM.
+.orga romPadding
+.headersize 0
+NewCodeRomStart:
+.headersize 0x80400000 - orga()
+NewCodeVaddrStart:
+.importobj "../hello_world.o"
+.headersize 0
+NewCodeRomEnd:
 
 .close

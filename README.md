@@ -18,11 +18,11 @@ the instructions on the glank's repo. For now, I assume that
 you have installed the toolchain in `/opt/n64-dev`. Sorry about that, I'll fix
 this later.
 
-To compile the practice hack, simply run `bash compile.sh`. Then, to patch the
-ROM, `cd` to the `patch` directory and run `gru make-rom.lua <your-sm64-rom-here>`.
+To compile the practice hack, simply run `bash patch.sh` in the `patch`
+subdirectory.
 
 ## Thanks
 
-Thanks to [@kdjmonaghan](https://github.com/kdjmonaghan) for getting me started, 
-[@queueRAM](https://github.com/queueRAM) and for the general help and their immensely useful tools, 
+Thanks to [@kdjmonaghan](https://github.com/kdjmonaghan) for getting me started,
+[@queueRAM](https://github.com/queueRAM) and for the general help and their immensely useful tools,
 and of course [@glankk](https://github.com/glankk) for making gz in the first place.
