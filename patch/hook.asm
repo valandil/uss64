@@ -61,7 +61,7 @@ jal LoadNewCodeInExpRam
 
 // Replace unused Mario behaviour with the our payload, executed at each frame.
 .orga behaviourHook
-.dw MainHook
+.dw 0x80400000
 
 // Import the payload at the end of the ROM.
 .orga romPadding
@@ -69,7 +69,7 @@ jal LoadNewCodeInExpRam
 NewCodeRomStart:
 .headersize 0x80400000 - orga()
 NewCodeVaddrStart:
-.importobj "../hello_world.o"
+.incbin "../uss64.bin"
 .headersize 0
 NewCodeRomEnd:
 
