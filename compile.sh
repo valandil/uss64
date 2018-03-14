@@ -8,6 +8,7 @@ mips64-gcc -DZ64_VERSION=Z64_OOT10 -G 0 -Wall -O2 -mtune=vr4300 -march=vr4300 -m
 mips64-gcc -DZ64_VERSION=Z64_OOT10 -G 0 -Wall -O2 -mtune=vr4300 -march=vr4300 -mabi=32 -c -I /opt/n64-dev/n64-sysroot/include gz/src/gz/gfx.c       -o gfx.o
 mips64-gcc -DZ64_VERSION=Z64_OOT10 -G 0 -Wall -O2 -mtune=vr4300 -march=vr4300 -mabi=32 -c -I /opt/n64-dev/n64-sysroot/include gz/src/gz/gu.c        -o gu.o
 mips64-gcc -DZ64_VERSION=Z64_OOT10 -G 0 -Wall -O2 -mtune=vr4300 -march=vr4300 -mabi=32 -c -I /opt/n64-dev/n64-sysroot/include gz/src/gz/zu.c        -o zu.o
+mips64-ld -r fipps.png.o grc.o vector.o startup.o hello_world.o resource.o gfx.o gu.o zu.o /opt/n64-dev/usr/mips64/lib/libc.a /opt/n64-dev/usr/mips64/lib/libm.a /opt/n64-dev/usr/mips64/lib/libcfe.a -o uss64.o
 mips64-g++ -T /opt/n64-dev/n64-sysroot/lib/gl-n64.ld \
            -nostartfiles \
            -specs=nosys.specs \

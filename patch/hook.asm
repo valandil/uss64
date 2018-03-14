@@ -69,10 +69,8 @@ jal LoadNewCodeInExpRam
 NewCodeRomStart:
 .headersize 0x80400000 - orga()
 NewCodeVaddrStart:
-.align 4
 .headersize 0
 .incbin "../uss64.bin"
-.headersize 0
 NewCodeRomEnd:
 
 .close
