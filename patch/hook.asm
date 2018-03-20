@@ -27,9 +27,6 @@ behaviourHook equ 0x0021CCE0
 .open "SM64.z64", "SM64-PracRom-asm.z64", ramEntryPoint
 
 // Labels to be placed in a separate asm file eventually.
-// void PrintXY(unsigned int x, unsigned int y, const char *str);
-.definelabel PrintXY, 0x802D66C0
-
 // void DmaCopy(unsigned int RAM_offset, unsigned int ROM_bottom, unsigned int ROM_top);
 .definelabel DmaCopy, 0x80278504
 
@@ -52,7 +49,6 @@ nop
 lw ra, 0x0014(sp)
 jr ra
 addiu sp, sp, 0x18
-
 
 // Hijack SM64's Thread3_Main function, after the message queues
 // have been initialized.
