@@ -1,14 +1,14 @@
 
 /**************************************************************************
- *									  *
- *		 Copyright (C) 1994, Silicon Graphics, Inc.		  *
- *									  *
+ *                                    *
+ *       Copyright (C) 1994, Silicon Graphics, Inc.       *
+ *                                    *
  *  These coded instructions, statements, and computer programs  contain  *
  *  unpublished  proprietary  information of Silicon Graphics, Inc., and  *
  *  are protected by Federal copyright law.  They  may  not be disclosed  *
  *  to  third  parties  or copied or duplicated in any form, in whole or  *
  *  in part, without the prior written consent of Silicon Graphics, Inc.  *
- *									  *
+ *                                    *
  **************************************************************************/
 /**************************************************************************
  *
@@ -19,7 +19,7 @@
  **************************************************************************/
 
 #ifndef _GBI_H_
-#define	_GBI_H_
+#define _GBI_H_
 
 /*
  * To use the F3DEX ucodes, define F3DEX_GBI before include this file.
@@ -44,9 +44,9 @@
  *
  * The command format is
  *
- *	|00xxxxxx| = DMA		0,..,127
- *	|10xxxxxx| = Immediate Mode	-65,..,-128
- *	|11xxxxxx| = RDP cmds		-1,..,-64
+ *  |00xxxxxx| = DMA        0,..,127
+ *  |10xxxxxx| = Immediate Mode -65,..,-128
+ *  |11xxxxxx| = RDP cmds       -1,..,-64
  *
  * Note: in order for the RSP microcode to process RDP commands opaquely,
  * we need to further identify those RDP commands that need DRAM address
@@ -58,19 +58,19 @@
  * Further explanation:
  * The names of the commands are somewhat misleading. Here is clarification:
  *
- *	- a 'DMA' type command has a pointer to additional data and
- *	  causes a DMA transfer to bring that into DMEM.
+ *  - a 'DMA' type command has a pointer to additional data and
+ *    causes a DMA transfer to bring that into DMEM.
  *
- *	- an 'Immediate' type command isn't really 'immediate', in the
- *	  traditional sense. This just means that the entire command fits
- *	  in the 64-bit word, and the ucode can execute it 'immediately'
- *	  without additional memory transfers.
+ *  - an 'Immediate' type command isn't really 'immediate', in the
+ *    traditional sense. This just means that the entire command fits
+ *    in the 64-bit word, and the ucode can execute it 'immediately'
+ *    without additional memory transfers.
  *
- *	- an 'RDP' command is identified as such because the RDP
- *	  commands can be passed-thru the RSP and sent to the RDP
- *	  directly. One further confusing thing, is that some 'DP'
- *	  macros below actually generate immediate commands, not
- *	  not direct DP commands.
+ *  - an 'RDP' command is identified as such because the RDP
+ *    commands can be passed-thru the RSP and sent to the RDP
+ *    directly. One further confusing thing, is that some 'DP'
+ *    macros below actually generate immediate commands, not
+ *    not direct DP commands.
  *
  * IMPLEMENTATION NOTE:
  * There is another group of RDP commands that includes the triangle commands
