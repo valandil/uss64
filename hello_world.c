@@ -1,5 +1,3 @@
-#define F3D_GBI
-
 #include <stddef.h>
 #include <n64/thread.h>
 #include <n64/message.h>
@@ -14,7 +12,8 @@
 void (*PrintXY)(unsigned int x, unsigned int y, const char *str) = (void*)0x802D66C0;
 void* (*alloc_displaylist)(unsigned int size) = (void*)0x8019CF44;
 static const char HelloString[] = "hello n64";
-static unsigned int x = 32;
+static const char USS64STring[] = "hello from uss64";
+static unsigned int x = 64;
 static unsigned int y = 32;
 static _Bool __attribute((section(".data")))         _ready = 0;
 
@@ -50,7 +49,7 @@ ENTRY void _start(void)
   }
 
   gfx_mode_init();
-  //gfx_printf(font, x, y, HelloString);
+  gfx_printf(font, x, y, USS64STring);
   //gfx_flush();
 
   // Lives back to normal position
