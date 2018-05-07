@@ -18,11 +18,12 @@
 
 // Useful constants. Should be placed in another file
 // and modified for other versions of the game.
-ramEntryPoint equ 0x80245000
-dmaHook       equ 0x80246050
-romPadding    equ 0x007CC700
-hookPoint     equ 0x802789FC
-behaviourHook equ 0x0021CCE0
+ramEntryPoint          equ 0x80245000
+dmaHook                equ 0x80246050
+romPadding             equ 0x007CC700
+hookPoint              equ 0x802789FC
+behaviourHook          equ 0x0021CCE0
+CleanUpDisplayListHook equ 0x80247D1C 
 
 .open "SM64.z64", "SM64-PracRom-asm.z64", ramEntryPoint
 
@@ -56,8 +57,12 @@ addiu sp, sp, 0x18
 jal LoadNewCodeInExpRam
 
 // Replace unused Mario behaviour with the our payload, executed at each frame.
-.orga behaviourHook
-.dw 0x80400000
+//.orga behaviourHook
+//.dw 0x80400000
+
+// Replace the call to 0x8024784C with a call to our function.
+.org CleanUpDisplayListHook
+jal 0x80400000
 
 // Import the payload at the end of the ROM.
 .orga romPadding

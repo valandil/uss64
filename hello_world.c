@@ -7,12 +7,17 @@
 #include "gz/src/gz/resource.h"
 #include "gz/src/gz/gfx.h"
 
-//#include "gbi.h"
+#include "sm64.h"
 
-void (*PrintXY)(unsigned int x, unsigned int y, const char *str) = (void*)0x802D66C0;
-void* (*alloc_displaylist)(unsigned int size) = (void*)0x8019CF44;
+// Functions
+void  (*PrintXY)           (unsigned int x, unsigned int y, const char *str) = (void*)0x802D66C0;
+void  (*sm64_printf)       (int x, int y, const char *format, ...)           = (void*)0x802D62D8;
+int   (*GetSegmentBase)    (int segment)                                     = (void*)0x80277F20;
+void* (*SegmentedToVirtual)(void* addr)                                      = (void*)0x80277F50;
+void* (*alloc_displaylist) (unsigned int size)                               = (void*)0x8019CF44;
+void  (*func_0x8024784C)   ()                                                = (void*)0x8024784C;
+
 static const char HelloString[] = "hello n64";
-static const char USS64STring[] = "hello from uss64";
 static unsigned int x = 64;
 static unsigned int y = 32;
 static _Bool __attribute((section(".data")))         _ready = 0;
@@ -20,41 +25,76 @@ static _Bool __attribute((section(".data")))         _ready = 0;
 // Display variables.
 #define GFX_DISP_SIZE 1000
 static struct gfx_font *font;
-static        void     *dlist;
+
+// gfx_printf variables
+static const char USS64String[] = " hello from uss64 ";
+static       int  master_dlist_addr;
+static       Gfx* master_dlist_ptr;
+
+static void stack_thunk(void (*func)(void))
+{
+  static __attribute__((section(".stack"))) _Alignas(8)
+  char stack[0x2000];
+  __asm__ volatile ("la     $t0, %1       \n"
+                    "sw     $sp, -4($t0)  \n"
+                    "sw     $ra, -8($t0)  \n"
+                    "addiu  $sp, $t0, -8  \n"
+                    "jalr   %0            \n"
+                    "lw     $ra, 0($sp)   \n"
+                    "lw     $sp, 4($sp)   \n"
+                    :: "r"(func), "i"(&stack[sizeof(stack)]));
+}
+
+static void main_hook(void)
+{
+  gfx_mode_init();
+  gfx_printf(font, x, y, USS64String);
+  gfx_flush();
+}
+
+static void init(void)
+{
+  // Initialize the static variables (I think).
+  clear_bss();
+  do_global_ctors();
+
+  // Initialize gfx.
+  {
+      gfx_start();
+      gfx_mode_configure(GFX_MODE_FILTER, G_TF_POINT);
+      gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_MODULATEIA_PRIM,
+                                                     G_CC_MODULATEIA_PRIM));
+  }
+
+  font = resource_get(RES_FONT_FIPPS);
+  _ready = 1;
+
+}
 
 // Try to write Hello World using native GFx.
-ENTRY void _start(void)
+ENTRY void _start()
 {
+  // Call the function we overwrote.
+  stack_thunk(func_0x8024784C);
+
   init_gp();
 
   if (!_ready)
   {
-    clear_bss();
-    do_global_ctors();
-    // initialize gfx /
-    {
-        gfx_start();
-        gfx_mode_configure(GFX_MODE_FILTER, G_TF_POINT);
-        gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_MODULATEIA_PRIM,
-                                                     G_CC_MODULATEIA_PRIM));
-    }
-    // Initialize our custom dlist.
-    {
-      //dlist = alloc_displaylist(GFX_DISP_SIZE);
-    }
-
-
-    font = resource_get(RES_FONT_FIPPS);
-    _ready = 1;
+    init();
   }
 
-  gfx_mode_init();
-  gfx_printf(font, x, y, USS64STring);
-  //gfx_flush();
+  else
+  {
+    main_hook();
+  }
+    
+  // // Get the address of the master dlist.
+  // master_dlist_addr  = GetSegmentBase(0x01);
+  // master_dlist_ptr   = (Gfx*)SegmentedToVirtual((void*)master_dlist_addr);
+  // gfx_flush();
 
-  // Lives back to normal position
-  //PrintXY(0x36, 0xD1, (void*)0x80338388, *(int16_t*)0x8033B260);
-
-  // Print hello world
-  PrintXY(x, y, HelloString);
+  // // Print hello world
+  // PrintXY(x, y, HelloString);
+  // sm64_printf(x, y, (void*)0x80338388, master_dlist_addr);
 }
