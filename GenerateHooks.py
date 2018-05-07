@@ -41,12 +41,12 @@ for i in range(len(hooks)):
   regex = re.compile(r"[0-9a-fA-F]{8}(?=.* "+"{})".format(hooks[i]))
 
   for j in range(len(result)):
-    match = regex.match(result[j])
+    match = regex.search(result[j])
     if match:
       print(match.string)
       print(match.re)
+      print(match.group(0))
       addr_re = match.string
-  
 
 # -- Create the YAML file and populate it with the addresses.
 addr_file = open("hooks.yaml", "w", newline=None)

@@ -1,7 +1,7 @@
 cd $(dirname $(readlink -f $0))
 BIN_ROOT=/opt/n64/bin/
 N64_SYSROOT=/opt/n64/mips64/n64-sysroot/
-CFLAGS='-g -Wall -O2 -mtune=vr4300 -march=vr4300 -mabi=32 -DF3D_GBI'
+CFLAGS='-g -Wall -O2 -mtune=vr4300 -march=vr4300 -mabi=32 -DF3D_GBI -DSM64_U'
 $BIN_ROOT/grc gz/res/gz/fipps.png -d gz/res/resources.json -o fipps.png.o
 $BIN_ROOT/mips64-gcc                         $CFLAGS -c                             $N64_SYSROOT/usr/include/grc.c           -o grc.o
 $BIN_ROOT/mips64-gcc                         $CFLAGS -c                             $N64_SYSROOT/usr/include/vector/vector.c -o vector.o

@@ -9,14 +9,6 @@
 
 #include "sm64.h"
 
-// Functions
-void  (*PrintXY)           (unsigned int x, unsigned int y, const char *str) = (void*)0x802D66C0;
-void  (*sm64_printf)       (int x, int y, const char *format, ...)           = (void*)0x802D62D8;
-int   (*GetSegmentBase)    (int segment)                                     = (void*)0x80277F20;
-void* (*SegmentedToVirtual)(void* addr)                                      = (void*)0x80277F50;
-void* (*alloc_displaylist) (unsigned int size)                               = (void*)0x8019CF44;
-void  (*func_0x8024784C)   ()                                                = (void*)0x8024784C;
-
 static const char HelloString[] = "hello n64";
 static unsigned int x = 64;
 static unsigned int y = 32;
@@ -45,11 +37,19 @@ static void stack_thunk(void (*func)(void))
                     :: "r"(func), "i"(&stack[sizeof(stack)]));
 }
 
+static void display_hook(void)
+{
+  // Call the function we overwrote.
+  stack_thunk(func_0x8024784C);
+
+  // Branch off the tail of the master DL.
+  gfx_flush();
+}
+
 static void main_hook(void)
 {
   gfx_mode_init();
   gfx_printf(font, x, y, USS64String);
-  gfx_flush();
 }
 
 static void init(void)
@@ -74,8 +74,6 @@ static void init(void)
 // Try to write Hello World using native GFx.
 ENTRY void _start()
 {
-  // Call the function we overwrote.
-  stack_thunk(func_0x8024784C);
 
   init_gp();
 
@@ -88,7 +86,7 @@ ENTRY void _start()
   {
     main_hook();
   }
-    
+
   // // Get the address of the master dlist.
   // master_dlist_addr  = GetSegmentBase(0x01);
   // master_dlist_ptr   = (Gfx*)SegmentedToVirtual((void*)master_dlist_addr);
