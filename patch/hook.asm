@@ -16,23 +16,23 @@
 
 .n64
 
-// Useful constants. Should be placed in another file
-// and modified for other versions of the game.
-ramEntryPoint          equ 0x80245000
-dmaHook                equ 0x80246050
-romPadding             equ 0x007CC700
-hookPoint              equ 0x802789FC
-behaviourHook          equ 0x0021CCE0
-CleanUpDisplayListHook equ 0x80247D1C
+// Hooks and such.
+SM64_RAMEntryPoint          equ {SM64_RAMEntryPoint}
+SM64_DMAHookCode            equ {SM64_DMAHookCode}
+SM64_DMAHookJump            equ {SM64_DMAHookJump}
+SM64_ROMPadding             equ {SM64_ROMPadding}
+SM64_ROMMainHook            equ {SM64_ROMMainHook}
+SM64_CleanUpDisplayListHook equ {SM64_CleanUpDisplayListHook}
+USS64_DisplayAddr           equ {USS64_DisplayAddr}
 
-.open "SM64.z64", "SM64-PracRom-asm.z64", ramEntryPoint
+.open "SM64.z64", "SM64-PracRom-asm.z64", SM64_RAMEntryPoint
 
 // Labels to be placed in a separate asm file eventually.
-// void DmaCopy(unsigned int RAM_offset, unsigned int ROM_bottom, unsigned int ROM_top);
-.definelabel DmaCopy, 0x80278504
+// void DMACopy(unsigned int RAM_offset, unsigned int ROM_bottom, unsigned int ROM_top);
+.definelabel DMACopy, 0x80278504
 
 // Replace the unused space at 0x80246050 with our DMA.
-.org dmaHook
+.org SM64_DMAHookCode
 LoadNewCodeInExpRam:
 
 // Prepare the stack.
@@ -43,7 +43,7 @@ sw    ra, 0x0014(sp)
 la    a0, NewCodeVaddrStart
 la    a1, NewCodeRomStart
 la    a2, NewCodeRomEnd
-jal DmaCopy
+jal DMACopy
 nop
 
 // Restore the stack.
@@ -53,16 +53,16 @@ addiu sp, sp, 0x18
 
 // Hijack SM64's Thread3_Main function, after the message queues
 // have been initialized.
-.org hookPoint
+.org SM64_DMAHookJump
 jal LoadNewCodeInExpRam
 
 // Replace unused Mario behaviour with the our payload, executed at each frame.
-//.orga behaviourHook
-//.dw 0x80400000
+.orga SM64_ROMMainHook
+.dw 0x80400000
 
 // Replace the call to 0x8024784C with a call to our function.
-.org CleanUpDisplayListHook
-jal 0x80400000
+.org SM64_CleanUpDisplayListHook
+jal USS64_DisplayAddr
 
 // Import the payload at the end of the ROM.
 .orga romPadding

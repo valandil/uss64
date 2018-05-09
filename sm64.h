@@ -3,6 +3,7 @@
 
 /// US version addresses.
 #ifdef  SM64_U
+
 // Variables.
 #define SM64_gDisplayListHead_tail_ptr			0x8033B06C
 
@@ -15,7 +16,12 @@
 #define func_0x8024784C_addr                    0x8024784C
 
 // Hooks.
-#define SM64_CleanUpDisplayList_hook            0x80247D1C
+#define SM64_DMACodePosition                    0x80246050
+#define SM64_DMAHookJump                        0x802789FC
+#define SM64_CleanUpDisplayListHook             0x80247D1C
+#define SM64_ROMPaddingStart                    0x007CC700
+#define SM64_ROMMainHook                        0x0021CCE0
+
 #endif
 
 /// J version addresses.
