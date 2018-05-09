@@ -9,6 +9,14 @@
 
 #include "sm64.h"
 
+void  (*PrintXY)           (unsigned int x, unsigned int y, const char *str) = (void*)PrintXY_addr;
+void  (*sm64_printf)       (int x, int y, const char *format, ...)           = (void*)sm64_printf_addr;
+int   (*GetSegmentBase)    (int segment)                                     = (void*)GetSegmentBase_addr;
+void* (*SegmentedToVirtual)(void* addr)                                      = (void*)SegmentedToVirtual_addr;
+void* (*alloc_displaylist) (unsigned int size)                               = (void*)alloc_displaylist_addr;
+void  (*func_0x8024784C)   ()                                                = (void*)func_0x8024784C_addr;
+
+
 static const char HelloString[] = "hello n64";
 static unsigned int x = 64;
 static unsigned int y = 32;
@@ -37,7 +45,7 @@ static void stack_thunk(void (*func)(void))
                     :: "r"(func), "i"(&stack[sizeof(stack)]));
 }
 
-static void display_hook(void)
+HOOK static void display_hook(void)
 {
   // Call the function we overwrote.
   stack_thunk(func_0x8024784C);
@@ -46,13 +54,13 @@ static void display_hook(void)
   gfx_flush();
 }
 
-static void main_hook(void)
+HOOK static void main_hook(void)
 {
   gfx_mode_init();
   gfx_printf(font, x, y, USS64String);
 }
 
-static void init(void)
+HOOK static void init(void)
 {
   // Initialize the static variables (I think).
   clear_bss();

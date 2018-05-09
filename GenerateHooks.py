@@ -46,7 +46,7 @@ for i in range(len(hooks)):
       print(match.string)
       print(match.re)
       print(match.group(0))
-      addr_re = match.string
+      addr_re = match.group(0)
 
 # -- Create the YAML file and populate it with the addresses.
 addr_file = open("hooks.yaml", "w", newline=None)
