@@ -43,20 +43,18 @@ for i in range(len(hooks)):
   for j in range(len(result)):
     match = regex.search(result[j])
     if match:
-      print(match.string)
-      print(match.re)
-      print(match.group(0))
-      addr_re = match.group(0)
+      addrs.append(match.group(0))
+      break
 
-# -- Create the YAML file and populate it with the addresses.
-addr_file = open("hooks.yaml", "w", newline=None)
-data = """
-  hooks:
-    -[_start, 0x80240000]
-"""
-yaml.dump(data, addr_file, default_flow_style=None)
-print(yaml.dump(data))
-print(data)
+# # -- Create the YAML file and populate it with the addresses.
+# addr_file = open("hooks.yaml", "w", newline=None)
+# data = """
+#   hooks:
+#     -[_start, 0x80240000]
+# """
+# yaml.dump(data, addr_file, default_flow_style=None)
+# print(yaml.dump(data))
+# print(data)
 
 # -- Preprocess the header file with the addresses.
 sub_cmd   = "cat sm64.h | mips64-gcc -E -DSM64_{}".format(args.version)
@@ -66,4 +64,4 @@ proc = subprocess.Popen(split_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIP
 result, errors = proc.communicate(timeout=15)
 print(result)
 
-# -- Populate the addresses.
+# -- Populate the armips script with the proper addresses.

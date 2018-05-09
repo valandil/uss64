@@ -34,4 +34,12 @@
 /// Assignments of variables and functions.
 #define SM64_gDisplayListHead                   (*(Gfx **)  SM64_gDisplayListHead_tail_ptr)
 
+// Function declarations.
+void  (*PrintXY)           (unsigned int x, unsigned int y, const char *str);
+void  (*sm64_printf)       (int x, int y, const char *format, ...);
+int   (*GetSegmentBase)    (int segment);
+void* (*SegmentedToVirtual)(void* addr);
+void* (*alloc_displaylist) (unsigned int size);
+void  (*func_0x8024784C)   ();
+
 #endif // SM64_H

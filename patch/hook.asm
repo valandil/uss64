@@ -23,7 +23,7 @@ dmaHook                equ 0x80246050
 romPadding             equ 0x007CC700
 hookPoint              equ 0x802789FC
 behaviourHook          equ 0x0021CCE0
-CleanUpDisplayListHook equ 0x80247D1C 
+CleanUpDisplayListHook equ 0x80247D1C
 
 .open "SM64.z64", "SM64-PracRom-asm.z64", ramEntryPoint
 

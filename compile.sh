@@ -7,6 +7,7 @@ $BIN_ROOT/mips64-gcc                         $CFLAGS -c                         
 $BIN_ROOT/mips64-gcc                         $CFLAGS -c                             $N64_SYSROOT/usr/include/vector/vector.c -o vector.o
 $BIN_ROOT/mips64-gcc                         $CFLAGS -c                             $N64_SYSROOT/usr/include/startup.c       -o startup.o
 $BIN_ROOT/mips64-gcc -DZ64_VERSION=Z64_OOT10 $CFLAGS -c -I $N64_SYSROOT/usr/include uss64.c                                  -o uss64.o
+$BIN_ROOT/mips64-gcc -DZ64_VERSION=Z64_OOT10 $CFLAGS -c -I $N64_SYSROOT/usr/include sm64.c                                   -o sm64.o
 $BIN_ROOT/mips64-gcc -DZ64_VERSION=Z64_OOT10 $CFLAGS -c -I $N64_SYSROOT/usr/include gz/src/gz/resource.c                     -o resource.o
 $BIN_ROOT/mips64-gcc -DZ64_VERSION=Z64_OOT10 $CFLAGS -c -I $N64_SYSROOT/usr/include gz/src/gz/gfx.c                          -o gfx.o
 $BIN_ROOT/mips64-gcc -DZ64_VERSION=Z64_OOT10 $CFLAGS -c -I $N64_SYSROOT/usr/include gz/src/gz/gu.c                           -o gu.o
@@ -21,6 +22,6 @@ $BIN_ROOT/mips64-g++                                                         \
            -Wl,--gc-sections                                                 \
            -Wl,--defsym,start=0x80400000                                     \
            -mabi=32                                                          \
-           uss64.o resource.o gfx.o gu.o grc.o zu.o vector.o startup.o \
+           uss64.o sm64.o resource.o gfx.o gu.o grc.o zu.o vector.o startup.o \
            -o uss64.elf
 $BIN_ROOT/mips64-objcopy -O binary uss64.elf uss64.bin
