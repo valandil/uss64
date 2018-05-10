@@ -48,15 +48,22 @@ for i in range(len(hooks)):
 
 
 # -- Preprocess the header file with the addresses.
-sub_cmd   = "cat sm64.h | mips64-gcc -E -DSM64_{}".format(args.version)
+strings_to_replace = ["SM64_RAMEntryPoint",         \
+                      "SM64_DMAHookCode",            \
+                      "SM64_DMAHookJump",            \
+                      "SM64_ROMPadding",             \
+                      "SM64_ROMMainHook",            \
+                      "SM64_CleanUpDisplayListHook" \
+                      ]
+sub_cmd   = 'printf \\"#include \\"sm64.h\\"\n{}\\"'.format(strings_to_replace[0])+" | mips64-gcc -E -DSM64_{} -xc -".format(args.version)
 split_cmd = shlex.split(sub_cmd)
+print(split_cmd)
 
 proc = subprocess.Popen(split_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 result, errors = proc.communicate(timeout=15)
-print(result)
+print(result.decode("utf-8"))
 
 # -- Populate the armips script with the proper addresses.
-
 # # -- Create the n64split-compatible YAML file and populate it with the addresses.
 # addr_file = open("hooks.yaml", "w", newline=None)
 # data = """
