@@ -20,7 +20,7 @@
 SM64_RAMEntryPoint          equ {SM64_RAMEntryPoint}
 SM64_DMAHookCode            equ {SM64_DMAHookCode}
 SM64_DMAHookJump            equ {SM64_DMAHookJump}
-SM64_ROMPadding             equ {SM64_ROMPadding}
+SM64_ROMPadding             equ {SM64_ROMPaddingStart}
 SM64_ROMMainHook            equ {SM64_ROMMainHook}
 SM64_CleanUpDisplayListHook equ {SM64_CleanUpDisplayListHook}
 USS64_DisplayAddr           equ {USS64_DisplayAddr}

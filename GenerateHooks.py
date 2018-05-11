@@ -27,6 +27,7 @@ args = parser.parse_args()
 
 # -- Names of the functions which we want to hook into SM64.
 hooks = ["_start", "display_hook"]
+HookNames = ["USS64_Start", "USS64_DisplayAddr"]
 addrs = []
 
 nm_cmd = "mips64-nm {}".format(args.elf)
@@ -38,32 +39,49 @@ result = result.splitlines()
 
 for i in range(len(hooks)):
   # Match the line with the proper function call.
-  regex = re.compile(r"[0-9a-fA-F]{8}(?=.* "+"{})".format(hooks[i]))
+  regex = re.compile(r"8[0-9a-fA-F]{7}(?=.* "+"{})".format(hooks[i]))
 
   for j in range(len(result)):
     match = regex.search(result[j])
     if match:
-      addrs.append(match.group(0))
+      addrs.append("0x"+match.group(0))
       break
 
 
 # -- Preprocess the header file with the addresses.
 strings_to_replace = ["SM64_RAMEntryPoint",         \
-                      "SM64_DMAHookCode",            \
-                      "SM64_DMAHookJump",            \
-                      "SM64_ROMPadding",             \
-                      "SM64_ROMMainHook",            \
+                      "SM64_DMAHookCode",           \
+                      "SM64_DMAHookJump",           \
+                      "SM64_ROMPaddingStart",       \
+                      "SM64_ROMMainHook",           \
                       "SM64_CleanUpDisplayListHook" \
                       ]
-sub_cmd   = 'printf \\"#include \\"sm64.h\\"\n{}\\"'.format(strings_to_replace[0])+" | mips64-gcc -E -DSM64_{} -xc -".format(args.version)
-split_cmd = shlex.split(sub_cmd)
-print(split_cmd)
+addrs_to_replace = []
 
-proc = subprocess.Popen(split_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-result, errors = proc.communicate(timeout=15)
-print(result.decode("utf-8"))
+for i in range(len(strings_to_replace)):
+  sub_cmd = "printf \"#include \\\"sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | mips64-gcc -E -DSM64_{} -xc - | tail -n 1".format(args.version)
+  addrs_to_replace.append(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))
+
+names = HookNames+strings_to_replace
+addrs = addrs+addrs_to_replace
+
+HooksDict = dict(zip(names,addrs))
+print(HooksDict)
+
 
 # -- Populate the armips script with the proper addresses.
+with open("patch/hook.asm", 'r') as armips_script:
+  armips_lines = armips_script.readlines()
+
+with open("patch/hook_{}.asm".format(args.version), 'w') as armips_o:
+  for armips_line in armips_lines:
+    for key, value in HooksDict.items():
+      armips_line = re.sub("{{{}}}".format(key), value, armips_line)
+    armips_o.write(armips_line)
+  armips_o.write("\n")
+  
+
+# -- Read the armips script.
 # # -- Create the n64split-compatible YAML file and populate it with the addresses.
 # addr_file = open("hooks.yaml", "w", newline=None)
 # data = """

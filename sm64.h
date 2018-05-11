@@ -17,7 +17,7 @@
 
 // Hooks.
 #define SM64_RAMEntryPoint                      0x80245000
-#define SM64_DMACodePosition                    0x80246050
+#define SM64_DMAHookCode                        0x80246050
 #define SM64_DMAHookJump                        0x802789FC
 #define SM64_CleanUpDisplayListHook             0x80247D1C
 #define SM64_ROMPaddingStart                    0x007CC700

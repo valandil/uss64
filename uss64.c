@@ -40,7 +40,7 @@ static void stack_thunk(void (*func)(void))
 HOOK static void display_hook(void)
 {
   // Call the function we overwrote.
-  stack_thunk(func_0x8024784C);
+  func_0x8024784C();
 
   // Branch off the tail of the master DL.
   gfx_flush();
