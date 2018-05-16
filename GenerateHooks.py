@@ -11,9 +11,13 @@ import yaml
 
 # -- OS stuff.
 import os
+import sys
 import subprocess
 import shlex
 import re
+
+# -- Change directory to where the scrit is located.
+os.chdir(sys.path[0])
 
 # -- Parse arguments
 parser = argparse.ArgumentParser()
@@ -79,7 +83,7 @@ with open("patch/hook_{}.asm".format(args.version), 'w') as armips_o:
       armips_line = re.sub("{{{}}}".format(key), value, armips_line)
     armips_o.write(armips_line)
   armips_o.write("\n")
-  
+
 
 # -- Read the armips script.
 # # -- Create the n64split-compatible YAML file and populate it with the addresses.

@@ -17,17 +17,17 @@ $BIN_ROOT/${CROSS}gcc -DZ64_VERSION=Z64_OOT10 $CFLAGS -c -I ${N64_SYSROOT}/inclu
 $BIN_ROOT/${CROSS}gcc -DZ64_VERSION=Z64_OOT10 $CFLAGS -c -I ${N64_SYSROOT}/include gz/src/gz/gu.c                               -o gu.o
 $BIN_ROOT/${CROSS}gcc -DZ64_VERSION=Z64_OOT10 $CFLAGS -c -I ${N64_SYSROOT}/include gz/src/gz/zu.c                               -o zu.o
 $BIN_ROOT/${CROSS}g++                                                         \
-           -Wa,-adhln                                                        \
-           -T ${N64_SYSROOT}/lib/gl-n64.ld                  \
-           -nostartfiles                                                     \
-           -specs=nosys.specs                                                \
-           -O2                                                               \
-           -Wall                                                             \
-           -mtune=vr4300 -march=4300                                         \
-           -flto                                                             \
-           -Wl,--gc-sections                                                 \
-           -Wl,--defsym,start=0x80400000                                     \
-           -mabi=32                                                          \
+           -Wa,-adhln                                                         \
+           -T ${N64_SYSROOT}/lib/gl-n64.ld                                    \
+           -nostartfiles                                                      \
+           -specs=nosys.specs                                                 \
+           -O2                                                                \
+           -Wall                                                              \
+           -mtune=vr4300 -march=4300                                          \
+           -flto                                                              \
+           -Wl,--gc-sections                                                  \
+           -Wl,--defsym,start=0x80400000                                      \
+           -mabi=32                                                           \
            uss64.o sm64.o resource.o gfx.o gu.o grc.o zu.o vector.o startup.o \
            -o uss64.elf
 $BIN_ROOT/${CROSS}objcopy -O binary uss64.elf uss64.bin

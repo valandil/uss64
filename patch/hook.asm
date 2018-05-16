@@ -65,7 +65,7 @@ jal LoadNewCodeInExpRam
 jal USS64_DisplayAddr
 
 // Import the payload at the end of the ROM.
-.orga romPadding
+.orga SM64_ROMPadding
 .headersize 0
 NewCodeRomStart:
 .headersize 0x80400000 - orga()
