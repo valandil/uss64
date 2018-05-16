@@ -1,3 +1,28 @@
+Development:
+ - Finish Fast3D support in `gbi.h`:
+   - [ ] `G_MW_FORCEMTX` and related macros.
+   - [ ] Fix `g{,s}SPMatrix`.
+   - [ ] Fix `g{,s}SPVertex`.
+   - [ ] Fix `g{,s}SPViewport`.
+   - [ ] Fix `g{,s}MoveWd`.
+   - [ ] Add `g{,s}SPInsertMatrix` (low priority).
+   - [ ] Check `g{,s}SPModifyVertex`.
+   - [ ] Check whether the `__gsSP1{Triangle,Line3D}_w1` have any use for us,
+         since the 2Triangles and Quadrangle stuff doesn't seem to be defined
+         in Fast3D. Make sure that they aren't used in gz.
+   - [ ] Fix `g{,s}SPCullDisplayList`.
+   - [ ] Fix the `g{,s}SPBranch` macros, and `gSPLoadUCode` related macros.
+         They aren't defined in Fast3D, so we should make sure that they aren't
+         used in gz.
+   - [ ] Fix `g{,s}SPNumLights`.
+   - [ ] Fix `gSPLight`.
+   - [ ] Fix `g{,s}SPLookAt{X,Y}`.
+   - [ ] Fix `g{,s}SPopMatrix{,N}`. The N variant doesn't exist in Fast3D, so make
+         sure it isn't used in gz.
+   - [ ] Fix `g{,s}SPGeometryMode`.
+   - [ ] Fix `g{,s}SPSetOtherMode`.
+
+
 Ideas for a future release:
  - Practice
    - [ ] Infinite lives

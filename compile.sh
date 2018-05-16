@@ -1,9 +1,9 @@
 cd $(dirname $(readlink -f $0))
-#BIN_ROOT=/opt/n64/bin/
-BIN_ROOT=/opt/n64-dev/usr/bin
-#BIN_ROOT=/usr/bin
-#N64_SYSROOT=/opt/n64/mips64/n64-sysroot/usr
-N64_SYSROOT=/opt/n64-dev/mips64/n64-sysroot/usr
+BIN_ROOT=/opt/n64/bin/
+#BIN_ROOT=/opt/n64-dev/usr/bin
+#BIN_ROOT=/usr/bin/
+N64_SYSROOT=/opt/n64/mips64/n64-sysroot/usr
+#N64_SYSROOT=/opt/n64-dev/mips64/n64-sysroot/usr
 CFLAGS='-g -Wall -O2 -mtune=vr4300 -march=vr4300 -mabi=32 -DF3D_GBI -DSM64_U'
 CROSS=mips64-
 $BIN_ROOT/grc  gz/res/gz/fipps.png -d gz/res/resources.json -o fipps.png.o
