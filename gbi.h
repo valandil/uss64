@@ -2319,7 +2319,7 @@ ERROR!! gSPInsertMatrix is no longer supported.
 #define LIGHT_2   2
 #define LIGHT_3   3
 #define LIGHT_4   4
-#define LIGHT_5   5 
+#define LIGHT_5   5
 #define LIGHT_6   6
 #define LIGHT_7   7
 #define LIGHT_8   8

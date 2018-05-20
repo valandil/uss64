@@ -43,8 +43,8 @@ HOOK static void display_hook(void)
 
 
     // Branch off the tail of the master DL.
-    gfx_flush();
     PrintXY(x,y, HelloString);
+    gfx_flush();
 
   }
 }
