@@ -37,23 +37,23 @@ HOOK static void display_hook(void)
 
   if (uss64_ready)
   {
-    // Try to manually write the DL
-    gDPSetFillColor(SM64_gDisplayListHead++, GPACK_RGBA5551(255,0,0,1) << 16 | GPACK_RGBA5551(255,0,0,1));
-    gDPFillRectangle(SM64_gDisplayListHead++, 0, 0, 10, 10);
-
-
     // Branch off the tail of the master DL.
     PrintXY(x,y, HelloString);
     gfx_flush();
+    
+    // Try to manually write the DL
+    gDPSetFillColor(SM64_gDisplayListHead++, GPACK_RGBA5551(255,0,0,1) << 16 | GPACK_RGBA5551(255,0,0,1));
+    gDPFillRectangle(SM64_gDisplayListHead++, 0, 0, 10, 10);
 
   }
 }
 
 HOOK static void main_hook(void)
 {
-  // Try to print iwth `gfx.c`.
+  // Try to print with `gfx.c`.
   gfx_mode_init();
   gfx_printf(font, 20, 20, USS64String);
+  PrintXY(x,2*y,"Hello from main_hook");
 
   // // Get the address of the master dlist.
   // master_dlist_addr  = GetSegmentBase(0x01);

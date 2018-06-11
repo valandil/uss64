@@ -5,7 +5,7 @@
 #ifdef SM64_U
 
 // Variables.
-#define SM64_gDisplayListHead_tail_ptr			    0x8033B06C
+#define SM64_gDisplayListHead_tail_ptr			0x8033B06C
 
 // Functions
 #define PrintXY_addr                            0x802D66C0

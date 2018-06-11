@@ -44,8 +44,8 @@ parser.add_argument("version",
 args = parser.parse_args()
 
 # -- Names of the functions which we want to hook into SM64.
-hooks = ["_start", "display_hook"]
-HookNames = ["USS64_Start", "USS64_DisplayAddr"]
+hooks     = ["_start",      "display_hook",      "gfx_flush",       "uss64_ready", "gfx_disp"]
+HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_gfx_flush", "USS64_Ready", "USS64_gfx_disp"]
 addrs = []
 
 # -- Use nm to output the symbol table of uss64.
@@ -106,6 +106,19 @@ with open("patch/hook_{}.asm".format(args.version), 'w') as armips_o:
       armips_line = re.sub("{{{}}}".format(key), value, armips_line)
     armips_o.write(armips_line)
   armips_o.write("\n")
+
+# -- For each file in scripts/, run the substitution algo.
+for filename in os.listdir("debug_scripts"):
+  with open("debug_scripts/{}".format(filename), 'r') as filename_input:
+    filename_lines = filename_input.readlines()
+
+  output_filename = os.path.splitext(filename)[0]
+  with open("debug_scripts_out/{}_{}.js".format(output_filename,args.version), 'w') as filename_o:
+    for filename_line in filename_lines:
+      for key, value in HooksDict.items():
+        filename_line = re.sub("{{{}}}".format(key), value, filename_line)
+      filename_o.write(filename_line)
+    filename_o.write("\n")
 
 # # -- Create the n64split-compatible YAML file and populate it with the addresses.
 # addr_file = open("hooks.yaml", "w", newline=None)
