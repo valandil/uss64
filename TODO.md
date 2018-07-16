@@ -22,7 +22,7 @@ Development:
    - [X] ~~Fix `g{,s}SPGeometryMode`~~. Check whether gsSPLoadGeometryMode has an equivalent in F3D.
    - [X] Fix `g{,s}SPSetOtherMode`.
  - [ ] Read RAM entry point from the ROM itself instead of hard-coding it in the Python script.
- - [ ] Check the address at which `SM64_gDisplayListHead` points before and after the
+ - [X] Check the address at which `SM64_gDisplayListHead` points before and after the
        `gfx_flush()` call to make sure that the DL is inserted.
  - [ ] ~~Research the behaviour of the RDP for invalid DLs.~~
        There isn't much in the official docs. Maybe try to inject a known DL with
