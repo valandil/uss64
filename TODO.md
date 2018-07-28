@@ -1,4 +1,7 @@
 Development:
+ - Check the textures that SM64 understands (fipps is ia4, for instance).
+ - Write a sane build pipeline (Makefile).
+ - Generate patches in different formats (xdelta, bps, ...).
  - Finish Fast3D support in `gbi.h`:
    - [X] `G_MW_FORCEMTX` and related macros.
    - [X] Fix `g{,s}SPMatrix`.

@@ -16,34 +16,50 @@ const UCODE_F3DEX2 = 0xC901CEF3; // from BT
 
 const G_MW_SEGMENT = 6;
 
+counter = 0;
+
 // janky, probably not the correct place to hook
 var evtdraw = events.ondraw(function()
 {
-    if(mem.u32[RSP_COMMAND_ADDR] != RSP_DISPLAYLIST_CMD)
+    if (mem.u32[{USS64_Ready}] == 0x01000000)
+    {
+        counter = counter + 1
+    }
+    if (mem.u32[{USS64_Ready}] == 0x01000000 && counter > 2)
+    {
+
+        if(mem.u32[RSP_COMMAND_ADDR] != RSP_DISPLAYLIST_CMD)
+        {
+            return;
+        }
+
+        events.remove(evtdraw);
+
+        var dlistAddr = mem.u32[RSP_DISPLAYLIST_ADDR];
+        var dlistSize = mem.u32[RSP_DISPLAYLIST_SIZE];
+        var ucodeEngineAddr = mem.u32[RSP_UCODE_ENGINE_ADDR];
+
+        var decoder = new Decoder();
+
+        decoder.setMicrocode(ucodeEngineAddr);
+        decoder.setDisplayList(dlistAddr, dlistSize);
+        decoder.run();
+
+        var romname = rom.getstring(0x20).trim();
+
+        var path = 'dldump-' + romname + '.txt';
+
+        var fd = fs.open(path, 'wb');
+        fs.write(fd, decoder.result);
+        fs.close(fd);
+        console.log('wrote result to ' + path);
+
+        debug.breakhere();
+    }
+    else
     {
         return;
     }
-
-    events.remove(evtdraw);
-
-    var dlistAddr = mem.u32[RSP_DISPLAYLIST_ADDR];
-    var dlistSize = mem.u32[RSP_DISPLAYLIST_SIZE];
-    var ucodeEngineAddr = mem.u32[RSP_UCODE_ENGINE_ADDR];
-
-    var decoder = new Decoder();
-
-    decoder.setMicrocode(ucodeEngineAddr);
-    decoder.setDisplayList(dlistAddr, dlistSize);
-    decoder.run();
-
-    var romname = rom.getstring(0x20).trim();
-
-    var path = 'dldump-' + romname + '.txt';
-
-    var fd = fs.open(path, 'wb');
-    fs.write(fd, decoder.result);
-    fs.close(fd);
-    console.log('wrote result to ' + path);
 });
 
 function Decoder(dlistAddr)

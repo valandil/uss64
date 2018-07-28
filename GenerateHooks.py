@@ -44,8 +44,8 @@ parser.add_argument("version",
 args = parser.parse_args()
 
 # -- Names of the functions which we want to hook into SM64.
-hooks     = ["_start",      "display_hook",      "gfx_flush",       "uss64_ready", "gfx_disp"]
-HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_gfx_flush", "USS64_Ready", "USS64_gfx_disp"]
+hooks     = ["_start",      "display_hook",      "gfx_flush",       "uss64_ready", "gfx_disp",       "gfx_disp_w"]
+HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_gfx_flush", "USS64_Ready", "USS64_gfx_disp", "USS64_gfx_disp_w"]
 addrs = []
 
 # -- Use nm to output the symbol table of uss64.
@@ -95,6 +95,8 @@ for i in range(len(strings_to_replace)):
 names = HookNames+strings_to_replace
 addrs = addrs+addrs_to_replace
 HooksDict = dict(zip(names,addrs))
+
+print(HooksDict)
 
 # -- Populate the armips script with the proper addresses.
 with open("patch/hook.asm", 'r') as armips_script:

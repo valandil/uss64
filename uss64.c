@@ -19,7 +19,7 @@ static unsigned int y = 32;
 static struct gfx_font *font;
 
 // gfx_printf variables
-static const char USS64String[] = " hello from uss64 ";
+static const char USS64String[] = "hello from uss64";
 static       int  master_dlist_addr;
 static       Gfx* master_dlist_ptr;
 
@@ -38,12 +38,12 @@ HOOK static void display_hook(void)
   if (uss64_ready)
   {
     // Branch off the tail of the master DL.
-    PrintXY(x,y, HelloString);
-    gfx_flush();
+    //PrintXY(x,y, HelloString);
     
     // Try to manually write the DL
     gDPSetFillColor(SM64_gDisplayListHead++, GPACK_RGBA5551(255,0,0,1) << 16 | GPACK_RGBA5551(255,0,0,1));
     gDPFillRectangle(SM64_gDisplayListHead++, 0, 0, 10, 10);
+    gfx_flush();
 
   }
 }
@@ -52,8 +52,8 @@ HOOK static void main_hook(void)
 {
   // Try to print with `gfx.c`.
   gfx_mode_init();
-  gfx_printf(font, 20, 20, USS64String);
-  PrintXY(x,2*y,"Hello from main_hook");
+  gfx_printf(font, 40, 20, "hello world");
+  //PrintXY(x,2*y,"Hello from main_hook");
 
   // // Get the address of the master dlist.
   // master_dlist_addr  = GetSegmentBase(0x01);
@@ -74,8 +74,9 @@ HOOK static void init(void)
   {
       gfx_start();
       gfx_mode_configure(GFX_MODE_FILTER, G_TF_POINT);
-      gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_MODULATEIA_PRIM,
-                                                     G_CC_MODULATEIA_PRIM));
+      gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_TEXEL0ONLY,
+                                                     G_CC_TEXEL0ONLY));
+      gfx_mode_configure(GFX_MODE_TEXT, GFX_TEXT_FAST);
   }
 
   font = resource_get(RES_FONT_FIPPS);
