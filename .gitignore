@@ -56,3 +56,7 @@ dkms.conf
 *.z64
 *.sav
 *.wch
+
+# repo related ignores
+debug_scripts_out/
+patch/

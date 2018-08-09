@@ -1,7 +1,16 @@
 Development:
- - Check the textures that SM64 understands (fipps is ia4, for instance).
- - Write a sane build pipeline (Makefile).
- - Generate patches in different formats (xdelta, bps, ...).
+ - [X] Check the textures that SM64 understands (fipps is ia4, for instance).
+ - [ ] Write a sane build pipeline (Makefile).
+   - [ ] Give $(BINDIR), $(ASMDIR) and $(PATCHDIR) as an argument to GenerateHooks in Makefile.
+   - [ ] Create a loop for all supported versions.
+   - [ ] Simplify directory structure of Makefile output, specifically the patch part.
+ - [ ] Generate patches in different formats (xdelta, bps, ...).
+ - [ ] Capture input
+   - First try through Mario's object, but not sure that's active all the time.
+   - Otherwise, capture the raw input data from the console.
+ - [ ] Spawn a simple menu. Just a return option.
+ - [ ] Code input display.
+ - [ ] Find more intelligent way to hook. Mario's behaviour is not run at every frame. 
  - Finish Fast3D support in `gbi.h`:
    - [X] `G_MW_FORCEMTX` and related macros.
    - [X] Fix `g{,s}SPMatrix`.
@@ -24,10 +33,10 @@ Development:
          sure it isn't used in gz.
    - [X] ~~Fix `g{,s}SPGeometryMode`~~. Check whether gsSPLoadGeometryMode has an equivalent in F3D.
    - [X] Fix `g{,s}SPSetOtherMode`.
- - [ ] Read RAM entry point from the ROM itself instead of hard-coding it in the Python script.
+ - [X] ~~Read RAM entry point from the ROM itself instead of hard-coding it in the Python script.~~ Actually we never parse the ROM for other data, so might as well hard-code it.
  - [X] Check the address at which `SM64_gDisplayListHead` points before and after the
        `gfx_flush()` call to make sure that the DL is inserted.
- - [ ] ~~Research the behaviour of the RDP for invalid DLs.~~
+ - [X] ~~Research the behaviour of the RDP for invalid DLs.~~
        There isn't much in the official docs. Maybe try to inject a known DL with
        deliberately wrong data and see what happens. Choose a second level DL
        to mess with a single layer (or try to).

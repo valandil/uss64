@@ -99,7 +99,7 @@ HooksDict = dict(zip(names,addrs))
 print(HooksDict)
 
 # -- Populate the armips script with the proper addresses.
-with open("patch/hook.asm", 'r') as armips_script:
+with open("asm/hook.asm", 'r') as armips_script:
   armips_lines = armips_script.readlines()
 
 with open("patch/hook_{}.asm".format(args.version), 'w') as armips_o:
