@@ -87,7 +87,7 @@ addrs_to_replace = []
 # -- For each hook, determine the address that the preprocessor outputs, and
 # -- write it in addrs_to_replace.
 for i in range(len(strings_to_replace)):
-  sub_cmd = "printf \"#include \\\"sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | mips64-gcc -E -DSM64_{} -xc - | tail -n 1".format(args.version)
+  sub_cmd = "printf \"#include \\\"src/sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | mips64-gcc -E -DSM64_{} -xc - | tail -n 1".format(args.version)
   addrs_to_replace.append(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))
 
 # -- Concatenate the uss64 addresses with the SM64 addresses and zip them

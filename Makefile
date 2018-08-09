@@ -23,7 +23,8 @@ CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -DF3D_GBI                                                  \
                     -DZ64_VERSION=Z64_OOT10                                    \
                     -DSM64_U                                                   \
-                    -I ${N64_SYSROOT}/include 
+                    -I ${N64_SYSROOT}/include                                  \
+                    -I $(CURDIR)
 CXXFLAGS          = -std=gnu++14 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32\
                     -DF3D_GBI
 LDFLAGS           = -T $(LDSCRIPT) -nostartfiles -specs=nosys.specs            \
@@ -41,7 +42,7 @@ PATCHDIR          = patch
 DEBUG_SCRIPTS_OUT = debug_scripts_out
 EMU_SCRIPTDIR     = c/Users/Joey/Documents/VGs/Emulation/Project64d/Scripts
 
-USS64FILES        = uss64.c sm64.c
+USS64FILES        = $(SRCDIR)/uss64.c $(SRCDIR)/sm64.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
 				    $(N64_SYSROOT)/include/vector/vector.c                     \
 				    $(N64_SYSROOT)/include/startup.c
@@ -52,7 +53,7 @@ GZFILES           = gz/src/gz/gfx.c                                            \
                     gz/src/gz/gu.c                                             \
                     gz/src/gz/zu.c
 RESFILES          = gz/res/gz/fipps.png
-HEADERS           = sm64.h
+HEADERS           = $(SRCDIR)/sm64.h
 
 USS64SRC         := $(foreach  s, $(USS64FILES),$(wildcard $(s)))
 USS64_OBJECTS    := $(patsubst %, $(OBJDIR)/%.o,$(USS64SRC))
