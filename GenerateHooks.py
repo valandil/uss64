@@ -2,15 +2,10 @@
 # Author:       Joey Dumont                   <joey.dumont@gmail.com>         #
 # Date:         2018-05-04                                                    #
 # Description:  Prepare the armips file necessary to inject uss64 into the    #
-#               specified version of the ROM. Store the addresses of specified#
-#               functions within the uss64 ELF in a YAML file for use with    #
-#               n64split.                                                     #
+#               specified version of the ROM.                                 #                                              #
 # --------------------------------------------------------------------------- #
 
 """
-TO FIX
- - Shell commands assume that the mips64-* binaries are in the path, and are
- - called mips64-{} and not mips64-elf-{}. Use the environment to generalize?
 TO DO:
  - Add the sm64.*.yml config files to the repo, and add the relevant uss64
    ranges and labels for easy disassembly.
@@ -35,13 +30,27 @@ os.chdir(sys.path[0])
 
 # -- Parse arguments
 parser = argparse.ArgumentParser()
+parser.add_argument("--mips64-nm",
+                    type=str,
+                    default="mips64-nm",
+                    help="Path to mips64-nm.")
+parser.add_argument("--mips64-gcc",
+                    type=str,
+                    default="mips64-gcc",
+                    help="Path to mips64-gcc.")
+parser.add_argument("--verbose", "-v",
+                    action="count",
+                    help="Increase the verbosity of the script.")
 parser.add_argument("elf",
-                  type=str,
-                  help="ELF file to analyze.")
+                    type=str,
+                    help="ELF file to analyze.")
 parser.add_argument("version",
-                  type=str,
-                  help="Version of the game to hook into (J or U).")
+                    type=str,
+                    help="Version of the game to hook into (J or U).")
 args = parser.parse_args()
+
+if (args.verbose == 1):
+  print(args.version)
 
 # -- Names of the functions which we want to hook into SM64.
 hooks     = ["_start",      "display_hook",      "gfx_flush",       "uss64_ready", "gfx_disp",       "gfx_disp_w"]
@@ -49,7 +58,7 @@ HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_gfx_flush", "USS64_Ready
 addrs = []
 
 # -- Use nm to output the symbol table of uss64.
-nm_cmd = "mips64-nm {}".format(args.elf)
+nm_cmd = "{} {}".format(args.mips64_nm,args.elf)
 split_nm_cmd = shlex.split(nm_cmd)
 proc = subprocess.Popen(split_nm_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 result, errors = proc.communicate(timeout=15)
@@ -75,28 +84,49 @@ for i in range(len(hooks)):
 # -- Determine the SM64 addresses that we hook on by
 # -- preprocessing the sm64.h header by specifing the proper
 # -- macro definition for the SM64 version we are currently using.
-strings_to_replace = ["SM64_RAMEntryPoint",         \
-                      "SM64_DMAHookCode",           \
-                      "SM64_DMAHookJump",           \
-                      "SM64_ROMPaddingStart",       \
-                      "SM64_ROMMainHook",           \
-                      "SM64_CleanUpDisplayListHook" \
+strings_to_replace = ["SM64_RAMEntryPoint",          \
+                      "SM64_DMAHookCode",            \
+                      "SM64_DMAHookJump",            \
+                      "SM64_ROMPaddingStart",        \
+                      "SM64_ROMMainHook",            \
+                      "SM64_CleanUpDisplayListHook", \
+                      "SM64_DMACopy",                \
+                      "osInvalDCache_addr"
                       ]
 addrs_to_replace = []
 
 # -- For each hook, determine the address that the preprocessor outputs, and
 # -- write it in addrs_to_replace.
 for i in range(len(strings_to_replace)):
-  sub_cmd = "printf \"#include \\\"src/sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | mips64-gcc -E -DSM64_{} -xc - | tail -n 1".format(args.version)
+  sub_cmd = "printf \"#include \\\"src/sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | {} -E -DSM64_{} -xc - | tail -n 1".format(args.mips64_gcc,args.version)
   addrs_to_replace.append(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))
+
+# -- Version strings, and file paths.
+FileNames = ["USS64_BIN",    \
+             "SM64_ROM",     \
+             "USS64_ROM",    \
+             "SM64_VERSION"
+             ]
+
+# -- Determine the full path to uss64.bin.
+sub_cmd = "readlink -f {}".format(args.elf)
+bin_name = os.path.splitext(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))[0]+".bin"
+bin_name = "c:\\msys64\\"+bin_name
+FilesToReplace = []
+FilesToReplace.append(bin_name)
+FilesToReplace += ["SM64_{}".format(args.version), \
+                  "uss64_{}".format(args.version), \
+                  "SM64_{}".format(args.version)
+                 ]
 
 # -- Concatenate the uss64 addresses with the SM64 addresses and zip them
 # -- up in a dict for easy access.
-names = HookNames+strings_to_replace
-addrs = addrs+addrs_to_replace
+names = HookNames+strings_to_replace+FileNames
+addrs = addrs+addrs_to_replace+FilesToReplace
 HooksDict = dict(zip(names,addrs))
 
-print(HooksDict)
+if (args.verbose == 2):
+  print(HooksDict)
 
 # -- Populate the armips script with the proper addresses.
 with open("asm/hook.asm", 'r') as armips_script:

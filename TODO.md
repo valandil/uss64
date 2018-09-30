@@ -1,5 +1,6 @@
 Development:
  - [X] Check the textures that SM64 understands (fipps is ia4, for instance).
+ - [ ] Add support for SM64 Europe.
  - [ ] Write a sane build pipeline (Makefile).
    - [ ] Give $(BINDIR), $(ASMDIR) and $(PATCHDIR) as an argument to GenerateHooks in Makefile.
    - [ ] Create a loop for all supported versions.

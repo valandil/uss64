@@ -5,32 +5,34 @@
 #                inserting the payload into the original ROMs, or to          #
 #                produce patches in different formats.                        #
 # --------------------------------------------------------------------------- #
+
 # Binaries
-ARMIPS            = armips
-CROSS             = mips64-
-CC                = $(CROSS)gcc
-CXX               = $(CROSS)g++
-LD                = $(CROSS)g++
-OBJCOPY           = $(CROSS)objcopy
-NM                = $(CROSS)nm
-PYTHON            = python
-GENERATEHOOKS     = GenerateHooks.py
-GRC               = AS=$(CROSS)as grc
+ARMIPS            := armips
+CROSS             := mips64-
+CC                := $(CROSS)gcc
+CXX               := $(CROSS)g++
+LD                := $(CROSS)g++
+OBJCOPY           := $(CROSS)objcopy
+NM                := $(CROSS)nm
+PYTHON            := python
+GENERATEHOOKS     := GenerateHooks.py
+GRC               := AS=$(CROSS)as grc
+N64CHECKSUM       := n64cksum
 
 # Compiler/linker flags
 N64_SYSROOT       = /opt/n64/mips64/n64-sysroot/usr/
 CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -DF3D_GBI                                                  \
                     -DZ64_VERSION=Z64_OOT10                                    \
-                    -DSM64_U                                                   \
                     -I ${N64_SYSROOT}/include                                  \
-                    -I $(CURDIR)
+                    -I $(CURDIR)                                               \
+                    $(SM64_VERSION_FLAG)
 CXXFLAGS          = -std=gnu++14 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32\
                     -DF3D_GBI
+LDSCRIPT          = $(N64_SYSROOT)/lib/gl-n64.ld
 LDFLAGS           = -T $(LDSCRIPT) -nostartfiles -specs=nosys.specs            \
                     -Wl,--gc-sections                                          \
                     -Wl,--defsym,start=0x80400000
-LDSCRIPT          = gl-n64.ld
 
 # Directories.
 SRCDIR            = src
@@ -42,6 +44,7 @@ PATCHDIR          = patch
 DEBUG_SCRIPTS_OUT = debug_scripts_out
 EMU_SCRIPTDIR     = c/Users/Joey/Documents/VGs/Emulation/Project64d/Scripts
 
+# Source file lists.
 USS64FILES        = $(SRCDIR)/uss64.c $(SRCDIR)/sm64.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
 				    $(N64_SYSROOT)/include/vector/vector.c                     \
@@ -52,66 +55,41 @@ GZFILES           = gz/src/gz/gfx.c                                            \
                     gz/src/gz/resource.c                                       \
                     gz/src/gz/gu.c                                             \
                     gz/src/gz/zu.c
+GZHEADERS         = $(wildcard gz/res/gz/*.h)
 RESFILES          = gz/res/gz/fipps.png
 HEADERS           = $(SRCDIR)/sm64.h
 
+# Source files variables.
 USS64SRC         := $(foreach  s, $(USS64FILES),$(wildcard $(s)))
-USS64_OBJECTS    := $(patsubst %, $(OBJDIR)/%.o,$(USS64SRC))
-
 STDSRC           := $(foreach  s, $(STDFILES),  $(wildcard $(s)))
-STD_OBJECTS      := $(patsubst %, $(OBJDIR)/%.o,$(STDSRC))
-
 GZSRC            := $(foreach  s, $(GZFILES),   $(wildcard $(s)))
-GZ_OBJECTS       := $(patsubst %, $(OBJDIR)/%.o,$(GZSRC))
-
-RESSRC           := $(foreach  s, $(RESFILES), $(wildcard $(s)))
-RES_OBJECTS      := $(patsubst %, $(OBJDIR)/%.o,$(RESSRC))
+RESSRC           := $(foreach  s, $(RESFILES),  $(wildcard $(s)))
 
 OBJECTS           = $(USS64_OBJECTS) $(STD_OBJECTS) $(GZ_OBJECTS) $(RES_OBJECTS)
+
 # Versions of SM64 to inject into.
-USS64_VERSIONS    = SM64_U SM64_J
+USS64_VERSIONS    = SM64_U SM64_J SM64_S #SM64_E
+
+# Default targets.
+USS64             = $(foreach v,$(USS64_VERSIONS),uss64-$(v))
+HOOKS             = $(foreach v,$(USS64_VERSIONS),GenerateHooks-uss64-$(v))
+PATCHES           = $(foreach v,$(USS64_VERSIONS),patch-uss64-$(v))
 
 # Makefile options
 .SECONDEXPANSION:
 .SUFFIXES:
 
-# Goal: 
-#   - for each item of USS64_VERSIONS, compile all relevant resource, C and
-#     C++ files to object files;
-#   - combine all object files into an ELF;
-#   - converto to binary file.
+# -- Targets
+all:  $(USS64) $(HOOKS) $(PATCHES)
 
-.PHONY: clean GenerateHooks patch scripts
+list:
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
-# Default targets.
-all: $(BINDIR)/uss64.bin GenerateHooks
+# Catch-all rule to make directories.
+%/:
+	mkdir -p $@
 
-$(USS64_OBJECTS): $(OBJDIR)/%.o : % | $$(dir $$@)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(STD_OBJECTS): $(OBJDIR)/%.o : % $(STDHEADERS) | $$(dir $$@)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(GZ_OBJECTS): $(OBJDIR)/%.o : % | $$(dir $$@)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(RES_OBJECTS): $(OBJDIR)/%.o : % | $$(dir $$@)
-	$(GRC) -d $(RESDESC) $^ -o $@
-
-$(BINDIR)/uss64.elf: $(OBJECTS) | $$(dir $$@)
-	$(LD) $(LDFLAGS) $^ -o $@
-
-$(BINDIR)/uss64.bin: $(BINDIR)/uss64.elf
-	$(OBJCOPY) -O binary $< $@
-
-GenerateHooks: $(BINDIR)/uss64.elf | $(DEBUG_SCRIPTS_OUT)/ $(PATCHDIR)/
-	$(PYTHON) $(GENERATEHOOKS) $(BINDIR)/uss64.elf U
-
-# Explicit targets.
-patch: GenerateHooks
-	cd patch
-	$(ARMIPS) hook_U.asm
-	$(N64CHECKSUM) uss64_U.z64
+.PHONY: clean list
 
 scripts: GenerateHooks
 	cp $(DEBUG_SCRIPTS_OUT)/uss64* $(EMU_SCRIPTDIR)
@@ -119,6 +97,88 @@ scripts: GenerateHooks
 clean:
 	rm -rf $(OBJDIR) $(BINDIR) $(DEBUG_SCRIPTS_OUT)
 
-# Catch-all rule to make directories.
-%/:
-	mkdir -p $@
+# Purpose: 
+#   - for each item of USS64_VERSIONS, compile all relevant resource, C and
+#     C++ files to object files;
+#   - combine all object files into an ELF;
+#   - convert to binary file.
+
+# We define a template for the generation of the uss64.bin binary
+# that is to be copied into the appropriate SM64 ROM.
+# Arguments:
+#	- $(1): Target prefixes
+#   - $(2): Short name of target.
+#   - $(3): Output dir for the target.
+#   - $(4): Source dir for the target.
+#   - $(5): Resource dir for the target.
+#   - $(6): Object output dir for the target.
+#   - $(7): Binary output dir for the target.
+define GenerateBinary =
+# -- Prepping directories. 
+TARGET-NAME-$(1)      = $(2)
+OUTPUT-DIR-$(1)       = $(3)
+SRCDIR-$(1)           = $(4)
+RESDIR-$(1)           = $(5)
+OBJDIR-$(1)   	      = $(6)
+BINDIR-$(1)           = $(7)
+
+VERSION-$(1)          = $$(shell echo $(3) | tail -c 2)
+
+# -- Variables for pattern rules.
+USS64_OBJECTS-$(1)    := $$(patsubst %, $$(OBJDIR-$(1))/%.o,$$(USS64SRC))
+STD_OBJECTS-$(1)      := $$(patsubst %, $$(OBJDIR-$(1))/%.o,$$(STDSRC))
+GZ_OBJECTS-$(1)       := $$(patsubst %, $$(OBJDIR-$(1))/%.o,$$(GZSRC))
+RES_OBJECTS-$(1)      := $$(patsubst %, $$(OBJDIR-$(1))/%.o,$$(RESSRC))
+
+# -- Short names for the main C targets.
+OBJ-$(1)              = $$(USS64_OBJECTS-$(1)) $$(STD_OBJECTS-$(1)) $$(GZ_OBJECTS-$(1)) $$(RES_OBJECTS-$(1))
+BIN-$(1)              = $$(BINDIR-$(1))/$$(TARGET-NAME-$(1)).bin
+ELF-$(1)              = $$(BINDIR-$(1))/$$(TARGET-NAME-$(1)).elf
+
+# -- Short name of binary target to easily add to global all target.
+BUILD-$(1)            = $(1)
+$$(BUILD-$(1))        : $$(BIN-$(1))
+   
+$$(BIN-$(1))          : $$(ELF-$(1)) | $$$$(dir $$$$@)
+	$$(OBJCOPY) -S -O binary $$< $$@
+
+$$(ELF-$(1))          : $$(OBJ-$(1)) | $$$$(dir $$$$@)
+	$$(LD) $$(LDFLAGS) $$^ -o $$@
+
+$$(USS64_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
+	$$(CC) $$(CFLAGS) -c $$< -o $$@
+
+$$(USS64_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
+
+$$(STD_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
+	$$(CC) $$(CFLAGS) -c $$< -o $$@
+
+$$(STD_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
+
+$$(GZ_OBJECTS-$(1))   : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
+	$$(CC) $$(CFLAGS) -c $$< -o $$@
+
+$$(GZ_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
+
+$$(RES_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o  : % | $$$$(dir $$$$@)
+	$$(GRC) -d $$(RESDESC) $$^ -o $$@
+
+$$(RES_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
+
+GenerateHooks-$(1)    : $$(ELF-$(1)) | $$(DEBUG_SCRIPTS_OUT)/ $$(PATCHDIR)/
+	$$(PYTHON) $$(GENERATEHOOKS) $$(ELF-$(1)) $$(VERSION-$(1))
+
+.ONESHELL:
+patch-$(1)            : GenerateHooks-$(1)
+	cd $$(PATCHDIR)
+	$$(ARMIPS) hook_$$(VERSION-$(1)).asm
+	$$(N64CHECKSUM) uss64_$$(VERSION-$(1)).z64
+
+.PHONY                : $$(BUILD-$(1)) GenerateHooks-$(1) patch-$(1)
+endef 
+
+# -- 
+$(foreach v, $(USS64_VERSIONS), $(eval \
+	$(call GenerateBinary,uss64-$(v),uss64,$(v),$(SRCDIR)/,$(RESDIR)/$(v),$(OBJDIR)/$(v),$(BINDIR)/$(v)) \
+))
+

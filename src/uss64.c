@@ -27,7 +27,7 @@ HOOK static void display_hook(void)
 {
 
   // Call the function we overwrote.
-  uint32_t addr = 0x8024784C;
+  uint32_t addr = funcCalledAtCleanUpDisplayListHook;
   __asm__ volatile ("addiu  $sp, $sp, -0x18   \n"
                     "sw     $ra, 0x14($sp)    \n"
                     "jal    %0                \n"

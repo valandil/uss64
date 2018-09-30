@@ -16,6 +16,12 @@
 
 .n64
 
+// Paths.
+USS64_BIN                   equ "{USS64_BIN}"
+SM64_ROM                    equ "{SM64_ROM}.z64"
+USS64_ROM                   equ "{USS64_ROM}.z64"
+SM64_VERSION                equ "{SM64_VERSION}"
+
 // Hooks and such.
 SM64_RAMEntryPoint          equ {SM64_RAMEntryPoint}
 SM64_DMAHookCode            equ {SM64_DMAHookCode}
@@ -23,13 +29,16 @@ SM64_DMAHookJump            equ {SM64_DMAHookJump}
 SM64_ROMPadding             equ {SM64_ROMPaddingStart}
 SM64_ROMMainHook            equ {SM64_ROMMainHook}
 SM64_CleanUpDisplayListHook equ {SM64_CleanUpDisplayListHook}
+SM64_DMACopy                equ {SM64_DMACopy}
+SM64_osInvalDCache          equ {osInvalDCache_addr}
 USS64_DisplayAddr           equ {USS64_DisplayAddr}
 
-.open "SM64.z64", "SM64-PracRom-asm.z64", SM64_RAMEntryPoint
+
+.open SM64_ROM, USS64_ROM, SM64_RAMEntryPoint
 
 // Labels to be placed in a separate asm file eventually.
 // void DMACopy(unsigned int RAM_offset, unsigned int ROM_bottom, unsigned int ROM_top);
-.definelabel DMACopy, 0x80278504
+.definelabel DMACopy,      SM64_DMACopy
 
 // Replace the unused space at 0x80246050 with our DMA.
 .org SM64_DMAHookCode
@@ -38,6 +47,16 @@ LoadNewCodeInExpRam:
 // Prepare the stack.
 addiu sp, sp, -0x18
 sw    ra, 0x0014(sp)
+
+// For the Shindou version, CopyScriptInterpreter has no
+// useless branches. We therefore must replace a function
+// call.
+.if SM64_VERSION == "SM64_S"
+
+jal SM64_osInvalDCache
+nop
+
+.endif 
 
 // DMA the payload to exp. pak RAM.
 la    a0, NewCodeVaddrStart
@@ -71,7 +90,7 @@ NewCodeRomStart:
 .headersize 0x80400000 - orga()
 NewCodeVaddrStart:
 .headersize 0
-.incbin "../uss64.bin"
+.incbin USS64_BIN
 NewCodeRomEnd:
 
 .close
