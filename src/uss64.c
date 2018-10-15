@@ -23,6 +23,25 @@ static struct gfx_font *font;
 static const char USS64String[] = "hello from uss64";
 static       int  master_dlist_addr;
 static       Gfx* master_dlist_ptr;
+static const uint32_t input_button_color[] =
+{
+  0xFFA000,
+  0xFFA000,
+  0xFFA000,
+  0xFFA000,
+  0xC0C0C0,
+  0xC0C0C0,
+  0x000000,
+  0x000000,
+  0xC8C8C8,
+  0xC8C8C8,
+  0xC8C8C8,
+  0xC8C8C8,
+  0xC80000,
+  0xC0C0C0,
+  0x009600,
+  0x5A5AFF,
+};
 
 HOOK static void display_hook(void)
 {
@@ -51,20 +70,33 @@ HOOK static void display_hook(void)
 
 HOOK static void main_hook(void)
 {
-  // Try to print with `gfx.c`.
+  // Initialize gfx_* for this frame.
   gfx_mode_init();
-  //gfx_printf(font, 40, 20, "hello world");
 
-  // Print out the buttonPressed and buttonDown values on screen.
-  char buffer[33];
-  itoa (SM64_gPlayer1Controller->buttonDown, buffer, 2);
-  gfx_printf(font,40,20, "%s", buffer);
-  gfx_printf(font,40,40, "test"); 
-
-  // Try to print when the L button is pressed.
-  if (SM64_gPlayer1Controller->buttonDown & L_TRIG)
+  // Input display.
+  float alpha = 0.2;
+  struct gfx_texture *button_texture = resource_get(RES_ICON_BUTTONS);
+  gfx_mode_set(GFX_MODE_COLOR, GPACK_RGBA8888(0xC0,0xC0,0xC0, alpha));
+  static const int buttons[] =
   {
-    gfx_printf(font,40,40, "L trigger is pressed");
+    15, 14, 12, 3, 2, 1, 0, 13, 5, 4, 11, 10, 9, 8,
+  };
+  uint16_t z_pad = SM64_gPlayer1Controller->buttonDown;
+  for (int i = 0; i < sizeof(buttons) / sizeof(*buttons); ++i) {
+    int b = buttons[i];
+    if (!(z_pad & (1 << b)))
+      continue;
+    int x = (button_texture->tile_width) / 2 + i * 10;
+    int y = -(gfx_font_xheight(font) + button_texture->tile_height + 1) / 2;
+    struct gfx_sprite sprite =
+    {
+      button_texture, b,
+      20 + x, 20 + y,
+      1.f, 1.f,
+    };
+    gfx_mode_set(GFX_MODE_COLOR, GPACK_RGB24A8(input_button_color[b],
+                                              alpha));
+    gfx_sprite_draw(&sprite);
   }
 }
 

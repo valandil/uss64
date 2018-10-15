@@ -57,7 +57,7 @@ GZFILES           = gz/src/gz/gfx.c                                            \
                     gz/src/gz/gu.c                                             \
                     gz/src/gz/zu.c
 GZHEADERS         = $(wildcard gz/res/gz/*.h)
-RESFILES          = gz/res/gz/fipps.png
+RESFILES          = gz/res/gz/fipps.png gz/res/gz/button_icons.png
 HEADERS           = $(SRCDIR)/sm64.h
 
 # Source files variables.

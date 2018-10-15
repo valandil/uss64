@@ -10,7 +10,7 @@ Development:
    - First try through Mario's object, but not sure that's active all the time.
    - Otherwise, capture the raw input data from the console.
  - [ ] Spawn a simple menu. Just a return option.
- - [ ] Code input display.
+ - [X] Code input display.
  - [ ] Find more intelligent way to hook. Mario's behaviour is not run at every frame. 
  - Finish Fast3D support in `gbi.h`:
    - [X] `G_MW_FORCEMTX` and related macros.
