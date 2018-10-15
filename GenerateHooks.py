@@ -111,7 +111,12 @@ FileNames = ["USS64_BIN",    \
 # -- Determine the full path to uss64.bin.
 sub_cmd = "readlink -f {}".format(args.elf)
 bin_name = os.path.splitext(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))[0]+".bin"
+
+# -- Determine if we on mingw python. 
+#if (sys.platform == "win32" and os.path.sep == "/" and os.name == "nt"):
 bin_name = "c:\\msys64\\"+bin_name
+
+# -- Final names of the output files.
 FilesToReplace = []
 FilesToReplace.append(bin_name)
 FilesToReplace += ["SM64_{}".format(args.version), \

@@ -35,6 +35,7 @@ LDFLAGS           = -T $(LDSCRIPT) -nostartfiles -specs=nosys.specs            \
                     -Wl,--defsym,start=0x80400000
 
 # Directories.
+ASMDIR            = asm
 SRCDIR            = src
 RESDIR            = gz/res
 RESDESC           = $(RESDIR)/resources.json
@@ -181,4 +182,4 @@ endef
 $(foreach v, $(USS64_VERSIONS), $(eval \
 	$(call GenerateBinary,uss64-$(v),uss64,$(v),$(SRCDIR)/,$(RESDIR)/$(v),$(OBJDIR)/$(v),$(BINDIR)/$(v)) \
 ))
-
+	

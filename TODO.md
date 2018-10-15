@@ -3,10 +3,10 @@ Development:
  - [ ] Add support for SM64 Europe.
  - [ ] Write a sane build pipeline (Makefile).
    - [ ] Give $(BINDIR), $(ASMDIR) and $(PATCHDIR) as an argument to GenerateHooks in Makefile.
-   - [ ] Create a loop for all supported versions.
-   - [ ] Simplify directory structure of Makefile output, specifically the patch part.
+   - [X] Create a loop for all supported versions.
+   - [X] Simplify directory structure of Makefile output, specifically the patch part.
  - [ ] Generate patches in different formats (xdelta, bps, ...).
- - [ ] Capture input
+ - [X] Capture input
    - First try through Mario's object, but not sure that's active all the time.
    - Otherwise, capture the raw input data from the console.
  - [ ] Spawn a simple menu. Just a return option.

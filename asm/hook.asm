@@ -4,14 +4,14 @@
 // Description:  ASM code that links the trainer code in the ROM and then    //
 //               DMAs it to expansion pak memory.                            //
 //                                                                           //
-// We hook into the CopyScriptInterpreter (0x802789FC) function of SM64, to  //
-// DMA copy our payload to expansion pak memory. We exploit the fact that the//
-// function starting at 0x80246050 is not used by SM64 to jump to that block //
+// We hook into the CopyScriptInterpreter function of SM64 to DMA copy our   //
+// payload to expansion pak memory. We exploit the fact that the function    //
+// just after the initialization function is not used to jump to that block  //
 // of code from CopyScriptInterpreter. This ensures that the OS has been     //
-// initialized, and that the message queues were setup properly (osInitalize //
+// initialized, and that the message queues were setup properly (osInitialize//
 // and SetupMessageQueues are called from Main and Thread3_Main,             //
-// respectively). We use the DmaCopy function contained in SM64 to DMA copy  //
-// our payload in RAM.                                                       //
+// respectively). We use the DmaCopy function contained in SM64 to copy our  //
+// payload in RAM.                                                           //
 // ------------------------------------------------------------------------- //
 
 .n64
@@ -32,7 +32,6 @@ SM64_CleanUpDisplayListHook equ {SM64_CleanUpDisplayListHook}
 SM64_DMACopy                equ {SM64_DMACopy}
 SM64_osInvalDCache          equ {osInvalDCache_addr}
 USS64_DisplayAddr           equ {USS64_DisplayAddr}
-
 
 .open SM64_ROM, USS64_ROM, SM64_RAMEntryPoint
 

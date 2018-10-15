@@ -1,11 +1,15 @@
 #ifndef SM64_H
 #define SM64_H
 
+#include "input.h"
+
 // US version addresses.
 #ifdef SM64_U
 
 // Variables.
 #define SM64_gDisplayListHead_tail_ptr			0x8033B06C
+#define SM64_gPlayer1Controller_addr            0x8032D5E4
+#define SM64_gPlayer2Controller_addr            0x8032D5EC
 
 // Functions
 #define PrintXY_addr                            0x802D66C0
@@ -32,6 +36,8 @@
 
 // Variables.
 #define SM64_gDisplayListHead_tail_ptr          0x80339CFC
+#define SM64_gPlayer1Controller_addr            0x8032C6A4
+#define SM64_gPlayer2Controller_addr            0x8032C6AC
 
 // Functions
 #define PrintXY_addr                            0x802D5BE0
@@ -64,6 +70,8 @@
 
 // Variables.
 #define SM64_gDisplayListHead_tail_ptr          0x8031D5B4
+#define SM64_gPlayer1Controller_addr            0x8030CD14
+#define SM64_gPlayer2Controller_addr            0x8030CD1C
 
 // Functions
 #define PrintXY_addr                            0x802BB908
@@ -87,7 +95,9 @@
 
 
 // Assignments of variables and functions.
-#define SM64_gDisplayListHead                   (*(Gfx **)  SM64_gDisplayListHead_tail_ptr)
+#define SM64_gDisplayListHead                   (*(Gfx **)         SM64_gDisplayListHead_tail_ptr)
+#define SM64_gPlayer1Controller                 (*(Controller **)  SM64_gPlayer1Controller_addr)
+#define SM64_gPlayer2Controller                 (*(Controller **)  SM64_gPlayer2Controller_addr)
 
 // Function declarations.
 void  (*PrintXY)           (unsigned int x, unsigned int y, const char *str);

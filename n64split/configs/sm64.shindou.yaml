@@ -4163,6 +4163,8 @@ labels:
    - [0x80309900, "__osSiDeviceBusy"]
    - [0x8030A350, "__osSetCompare"]
    - [0x8030A360, "__osProbeTLB"]
+   - [0x8033CD14, "gPlayer1Controller"]
+   - [0x8033CD1C, "gPlayer2Controller"]
    - [0x80378800, "Copy32BitTriple"]
    - [0x8037882C, "proc_8037882C"]
    - [0x8037885C, "proc_8037885C"]

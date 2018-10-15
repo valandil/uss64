@@ -8,6 +8,7 @@
 #include "gz/src/gz/gfx.h"
 
 #include "sm64.h"
+#include "input.h"
 
 static _Bool __attribute((section(".data")))         uss64_ready = 0;
 static const char HelloString[] = "hello n64";
@@ -52,16 +53,19 @@ HOOK static void main_hook(void)
 {
   // Try to print with `gfx.c`.
   gfx_mode_init();
-  gfx_printf(font, 40, 20, "hello world");
-  //PrintXY(x,2*y,"Hello from main_hook");
+  //gfx_printf(font, 40, 20, "hello world");
 
-  // // Get the address of the master dlist.
-  // master_dlist_addr  = GetSegmentBase(0x01);
-  // master_dlist_ptr   = (Gfx*)SegmentedToVirtual((void*)master_dlist_addr);
+  // Print out the buttonPressed and buttonDown values on screen.
+  char buffer[33];
+  itoa (SM64_gPlayer1Controller->buttonDown, buffer, 2);
+  gfx_printf(font,40,20, "%s", buffer);
+  gfx_printf(font,40,40, "test"); 
 
-  // // Print hello world
-  // PrintXY(x, y, HelloString);
-  // sm64_printf(x, y, (void*)0x80338388, master_dlist_addr);
+  // Try to print when the L button is pressed.
+  if (SM64_gPlayer1Controller->buttonDown & L_TRIG)
+  {
+    gfx_printf(font,40,40, "L trigger is pressed");
+  }
 }
 
 HOOK static void init(void)
