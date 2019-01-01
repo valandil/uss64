@@ -18,6 +18,7 @@ PYTHON            := python
 GENERATEHOOKS     := GenerateHooks.py
 GRC               := AS=$(CROSS)as grc
 N64CHECKSUM       := n64cksum
+XDELTA            := xdelta3
 
 # Compiler/linker flags
 N64_SYSROOT       = /opt/n64/mips64/n64-sysroot/usr/
@@ -174,6 +175,8 @@ patch-$(1)            : GenerateHooks-$(1)
 	cd $$(PATCHDIR)
 	$$(ARMIPS) hook_$$(VERSION-$(1)).asm
 	$$(N64CHECKSUM) uss64_$$(VERSION-$(1)).z64
+
+	$$(XDELTA) -e -s SM64_$$(VERSION-$(1)).z64 uss64_$$(VERSION-$(1)).z64 uss64_$$(VERSION-$(1)).xdelta
 
 .PHONY                : $$(BUILD-$(1)) GenerateHooks-$(1) patch-$(1)
 endef 

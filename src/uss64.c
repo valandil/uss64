@@ -74,9 +74,9 @@ HOOK static void main_hook(void)
   gfx_mode_init();
 
   // Input display.
-  float alpha = 0.2;
+  float alpha = 0.7;
   struct gfx_texture *button_texture = resource_get(RES_ICON_BUTTONS);
-  gfx_mode_set(GFX_MODE_COLOR, GPACK_RGBA8888(0xC0,0xC0,0xC0, alpha));
+  gfx_mode_set(GFX_MODE_COLOR, GPACK_RGBA8888(0xC0, 0xC0, 0xC0, alpha));
   static const int buttons[] =
   {
     15, 14, 12, 3, 2, 1, 0, 13, 5, 4, 11, 10, 9, 8,
@@ -94,8 +94,7 @@ HOOK static void main_hook(void)
       20 + x, 20 + y,
       1.f, 1.f,
     };
-    gfx_mode_set(GFX_MODE_COLOR, GPACK_RGB24A8(input_button_color[b],
-                                              alpha));
+    gfx_mode_set(GFX_MODE_COLOR, GPACK_RGB24A8(input_button_color[b],alpha));
     gfx_sprite_draw(&sprite);
   }
 }
@@ -110,9 +109,9 @@ HOOK static void init(void)
   {
       gfx_start();
       gfx_mode_configure(GFX_MODE_FILTER, G_TF_POINT);
-      gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_TEXEL0ONLY,
-                                                     G_CC_TEXEL0ONLY));
-      gfx_mode_configure(GFX_MODE_TEXT, GFX_TEXT_FAST);
+      gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_TRILERP,
+                                                     G_CC_TRILERP));
+      gfx_mode_configure(GFX_MODE_TEXT, GFX_TEXT_NORMAL);
   }
 
   font = resource_get(RES_FONT_FIPPS);

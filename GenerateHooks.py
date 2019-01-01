@@ -114,7 +114,7 @@ bin_name = os.path.splitext(subprocess.check_output(sub_cmd, shell=True).strip()
 
 # -- Determine if we on mingw python. 
 #if (sys.platform == "win32" and os.path.sep == "/" and os.name == "nt"):
-bin_name = "c:\\msys64\\"+bin_name
+bin_name = r"c:\\msys64\\"+bin_name
 
 # -- Final names of the output files.
 FilesToReplace = []
