@@ -68,10 +68,14 @@ HOOK static void display_hook(void)
   }
 }
 
-HOOK static void main_hook(void)
+HOOK static void mario_hook(void)
 {
   // Initialize gfx_* for this frame.
   gfx_mode_init();
+
+  // Stick display.
+  gfx_printf(font, 10, Z64_SCREEN_HEIGHT - 10, "%+06.2f %+06.2f", SM64_gPlayer1Controller->stickX,
+                                                                  SM64_gPlayer1Controller->stickY);
 
   // Input display.
   float alpha = 0.7;
@@ -86,13 +90,13 @@ HOOK static void main_hook(void)
     int b = buttons[i];
     if (!(z_pad & (1 << b)))
       continue;
-    int x = (button_texture->tile_width) / 2 + i * 10;
-    int y = -(gfx_font_xheight(font) + button_texture->tile_height + 1) / 2;
+    int x = (1.2*button_texture->tile_width) / 2 + i * 12;
+    int y = Z64_SCREEN_HEIGHT - 10 - (gfx_font_xheight(font) + button_texture->tile_width + 3) / 2;
     struct gfx_sprite sprite =
     {
       button_texture, b,
-      20 + x, 20 + y,
-      1.f, 1.f,
+      12 * font->char_width + x, y,
+      1.2f, 1.2f,
     };
     gfx_mode_set(GFX_MODE_COLOR, GPACK_RGB24A8(input_button_color[b],alpha));
     gfx_sprite_draw(&sprite);
@@ -109,8 +113,8 @@ HOOK static void init(void)
   {
       gfx_start();
       gfx_mode_configure(GFX_MODE_FILTER, G_TF_POINT);
-      gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_TRILERP,
-                                                     G_CC_TRILERP));
+      gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_TEXEL0ONLY,
+                                                     G_CC_TEXEL0ONLY));
       gfx_mode_configure(GFX_MODE_TEXT, GFX_TEXT_NORMAL);
   }
 
@@ -132,7 +136,7 @@ ENTRY void _start()
 
   else
   {
-    main_hook();
+    mario_hook();
   }
 
 }

@@ -176,7 +176,7 @@ patch-$(1)            : GenerateHooks-$(1)
 	$$(ARMIPS) hook_$$(VERSION-$(1)).asm
 	$$(N64CHECKSUM) uss64_$$(VERSION-$(1)).z64
 
-	$$(XDELTA) -e -s SM64_$$(VERSION-$(1)).z64 uss64_$$(VERSION-$(1)).z64 uss64_$$(VERSION-$(1)).xdelta
+	$$(XDELTA) -f -e -s SM64_$$(VERSION-$(1)).z64 uss64_$$(VERSION-$(1)).z64 uss64_$$(VERSION-$(1)).xdelta
 
 .PHONY                : $$(BUILD-$(1)) GenerateHooks-$(1) patch-$(1)
 endef 
