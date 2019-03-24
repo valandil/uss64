@@ -7,7 +7,7 @@
 #ifdef SM64_U
 
 // Variables.
-#define SM64_gDisplayListHead_tail_ptr			0x8033B06C
+#define SM64_gDisplayListHead_tail_ptr			    0x8033B06C
 #define SM64_gPlayer1Controller_addr            0x8032D5E4
 #define SM64_gPlayer2Controller_addr            0x8032D5EC
 
@@ -28,6 +28,7 @@
 #define SM64_ROMPaddingStart                    0x007CC700
 #define SM64_ROMMainHook                        0x0021CCE0
 #define SM64_DMACopy                            0x80278504
+#define SM64_SoundInitHook                      0x802494E8
 
 #endif // SM64_U
 
@@ -56,6 +57,7 @@
 #define SM64_CleanUpDisplayListHook             0x80247CEC
 #define SM64_ROMPaddingStart                    0x00761BE0
 #define SM64_ROMMainHook                        0x0021AFF0
+#define SM64_SoundInitHook                      0x802494B8
 
 #endif // SM64_J
 
@@ -90,9 +92,10 @@
 #define SM64_CleanUpDisplayListHook             0x8024B104
 #define SM64_ROMPaddingStart                    0x0079D6D0
 #define SM64_ROMMainHook                        0x001F7D00
+#define SM64_SoundInitHook                      0x8024C39C
+#define SM64_FuncCalledAtSoundInitHook          0x802FD6B0
 
 #endif // SM64_S
-
 
 // Assignments of variables and functions.
 #define SM64_gDisplayListHead                   (*(Gfx **)         SM64_gDisplayListHead_tail_ptr)

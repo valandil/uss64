@@ -8,7 +8,8 @@
 
 # Binaries
 ARMIPS            := armips
-CROSS             := mips64-
+CROSS             ?= mips64-
+TOOLS_PREFIX      ?= /opt/n64/bin/
 CC                := $(CROSS)gcc
 CXX               := $(CROSS)g++
 LD                := $(CROSS)g++
@@ -16,11 +17,12 @@ OBJCOPY           := $(CROSS)objcopy
 NM                := $(CROSS)nm
 PYTHON            := python
 GENERATEHOOKS     := GenerateHooks.py
-GRC               := AS=$(CROSS)as grc
+GRC               := AS=$(CROSS)as $(TOOLS_PREFIX)grc
 N64CHECKSUM       := n64cksum
+XDELTA            := xdelta3
 
-# Compiler/linker flags
-N64_SYSROOT       = /opt/n64/mips64/n64-sysroot/usr/
+# Compiler/linker flags (verify that -mabi=32 is necessary).
+N64_SYSROOT      ?= /opt/n64/mips64/n64-sysroot/usr/
 CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -DF3D_GBI                                                  \
                     -DZ64_VERSION=Z64_OOT10                                    \
@@ -48,8 +50,8 @@ EMU_SCRIPTDIR     = c/Users/Joey/Documents/VGs/Emulation/Project64d/Scripts
 # Source file lists.
 USS64FILES        = $(SRCDIR)/uss64.c $(SRCDIR)/sm64.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
-				    $(N64_SYSROOT)/include/vector/vector.c                     \
-				    $(N64_SYSROOT)/include/startup.c
+				            $(N64_SYSROOT)/include/vector/vector.c                     \
+				            $(N64_SYSROOT)/include/startup.c
 STDHEADERS       := $(patsubst %.c, %.h, $(STDFILES))
 STDHEADERS       += $(N64_SYSROOT)/include/n64.h
 GZFILES           = gz/src/gz/gfx.c                                            \
@@ -57,7 +59,7 @@ GZFILES           = gz/src/gz/gfx.c                                            \
                     gz/src/gz/gu.c                                             \
                     gz/src/gz/zu.c
 GZHEADERS         = $(wildcard gz/res/gz/*.h)
-RESFILES          = gz/res/gz/fipps.png
+RESFILES          = gz/res/gz/fipps.png gz/res/gz/button_icons.png
 HEADERS           = $(SRCDIR)/sm64.h
 
 # Source files variables.
@@ -69,7 +71,7 @@ RESSRC           := $(foreach  s, $(RESFILES),  $(wildcard $(s)))
 OBJECTS           = $(USS64_OBJECTS) $(STD_OBJECTS) $(GZ_OBJECTS) $(RES_OBJECTS)
 
 # Versions of SM64 to inject into.
-USS64_VERSIONS    = SM64_U SM64_J SM64_S #SM64_E
+USS64_VERSIONS    = SM64_U SM64_J SM64_S #SM64_Q SM64_E
 
 # Default targets.
 USS64             = $(foreach v,$(USS64_VERSIONS),uss64-$(v))
@@ -98,7 +100,7 @@ scripts: GenerateHooks
 clean:
 	rm -rf $(OBJDIR) $(BINDIR) $(DEBUG_SCRIPTS_OUT)
 
-# Purpose: 
+# Purpose:
 #   - for each item of USS64_VERSIONS, compile all relevant resource, C and
 #     C++ files to object files;
 #   - combine all object files into an ELF;
@@ -115,7 +117,7 @@ clean:
 #   - $(6): Object output dir for the target.
 #   - $(7): Binary output dir for the target.
 define GenerateBinary =
-# -- Prepping directories. 
+# -- Prepping directories.
 TARGET-NAME-$(1)      = $(2)
 OUTPUT-DIR-$(1)       = $(3)
 SRCDIR-$(1)           = $(4)
@@ -139,7 +141,7 @@ ELF-$(1)              = $$(BINDIR-$(1))/$$(TARGET-NAME-$(1)).elf
 # -- Short name of binary target to easily add to global all target.
 BUILD-$(1)            = $(1)
 $$(BUILD-$(1))        : $$(BIN-$(1))
-   
+
 $$(BIN-$(1))          : $$(ELF-$(1)) | $$$$(dir $$$$@)
 	$$(OBJCOPY) -S -O binary $$< $$@
 
@@ -167,7 +169,7 @@ $$(RES_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o  : % | $$$$(dir $$$$@)
 $$(RES_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
 
 GenerateHooks-$(1)    : $$(ELF-$(1)) | $$(DEBUG_SCRIPTS_OUT)/ $$(PATCHDIR)/
-	$$(PYTHON) $$(GENERATEHOOKS) $$(ELF-$(1)) $$(VERSION-$(1))
+	$$(PYTHON) $$(GENERATEHOOKS) -vv $$(ELF-$(1)) $$(VERSION-$(1)) --mips64-nm=$$(CROSS)nm --mips64-gcc=$$(CROSS)gcc
 
 .ONESHELL:
 patch-$(1)            : GenerateHooks-$(1)
@@ -175,11 +177,12 @@ patch-$(1)            : GenerateHooks-$(1)
 	$$(ARMIPS) hook_$$(VERSION-$(1)).asm
 	$$(N64CHECKSUM) uss64_$$(VERSION-$(1)).z64
 
-.PHONY                : $$(BUILD-$(1)) GenerateHooks-$(1) patch-$(1)
-endef 
+	$$(XDELTA) -f -e -s SM64_$$(VERSION-$(1)).z64 uss64_$$(VERSION-$(1)).z64 uss64_$$(VERSION-$(1)).xdelta
 
-# -- 
+.PHONY                : $$(BUILD-$(1)) GenerateHooks-$(1) patch-$(1)
+endef
+
+# -- Generate the targets for all uss64_versions.
 $(foreach v, $(USS64_VERSIONS), $(eval \
 	$(call GenerateBinary,uss64-$(v),uss64,$(v),$(SRCDIR)/,$(RESDIR)/$(v),$(OBJDIR)/$(v),$(BINDIR)/$(v)) \
 ))
-	

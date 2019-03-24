@@ -10,23 +10,35 @@
 #include "sm64.h"
 #include "input.h"
 
+// uss64 variables.
 static _Bool __attribute((section(".data")))         uss64_ready = 0;
-static const char HelloString[] = "hello n64";
-static unsigned int x = 64;
-static unsigned int y = 32;
 
 // Display variables.
-#define GFX_DISP_SIZE 1000
 static struct gfx_font *font;
 
 // gfx_printf variables
-static const char USS64String[] = "hello from uss64";
-static       int  master_dlist_addr;
-static       Gfx* master_dlist_ptr;
+static const uint32_t input_button_color[] =
+{
+  0xFFA000,
+  0xFFA000,
+  0xFFA000,
+  0xFFA000,
+  0xC0C0C0,
+  0xC0C0C0,
+  0x000000,
+  0x000000,
+  0xC8C8C8,
+  0xC8C8C8,
+  0xC8C8C8,
+  0xC8C8C8,
+  0xC80000,
+  0xC0C0C0,
+  0x009600,
+  0x5A5AFF,
+};
 
 HOOK static void display_hook(void)
 {
-
   // Call the function we overwrote.
   uint32_t addr = funcCalledAtCleanUpDisplayListHook;
   __asm__ volatile ("addiu  $sp, $sp, -0x18   \n"
@@ -38,9 +50,7 @@ HOOK static void display_hook(void)
 
   if (uss64_ready)
   {
-    // Branch off the tail of the master DL.
-    //PrintXY(x,y, HelloString);
-    
+
     // Try to manually write the DL
     gDPSetFillColor(SM64_gDisplayListHead++, GPACK_RGBA5551(255,0,0,1) << 16 | GPACK_RGBA5551(255,0,0,1));
     gDPFillRectangle(SM64_gDisplayListHead++, 0, 0, 10, 10);
@@ -51,20 +61,36 @@ HOOK static void display_hook(void)
 
 HOOK static void main_hook(void)
 {
-  // Try to print with `gfx.c`.
+  // Initialize gfx_* for this frame.
   gfx_mode_init();
-  //gfx_printf(font, 40, 20, "hello world");
 
-  // Print out the buttonPressed and buttonDown values on screen.
-  char buffer[33];
-  itoa (SM64_gPlayer1Controller->buttonDown, buffer, 2);
-  gfx_printf(font,40,20, "%s", buffer);
-  gfx_printf(font,40,40, "test"); 
+  // Stick display.
+  gfx_printf(font, 10, Z64_SCREEN_HEIGHT - 10, "%+06.2f %+06.2f", SM64_gPlayer1Controller->stickX,
+                                                                  SM64_gPlayer1Controller->stickY);
 
-  // Try to print when the L button is pressed.
-  if (SM64_gPlayer1Controller->buttonDown & L_TRIG)
+  // Input display.
+  float alpha = 0.7;
+  struct gfx_texture *button_texture = resource_get(RES_ICON_BUTTONS);
+  gfx_mode_set(GFX_MODE_COLOR, GPACK_RGBA8888(0xC0, 0xC0, 0xC0, alpha));
+  static const int buttons[] =
   {
-    gfx_printf(font,40,40, "L trigger is pressed");
+    15, 14, 12, 3, 2, 1, 0, 13, 5, 4, 11, 10, 9, 8,
+  };
+  uint16_t z_pad = SM64_gPlayer1Controller->buttonDown;
+  for (int i = 0; i < sizeof(buttons) / sizeof(*buttons); ++i) {
+    int b = buttons[i];
+    if (!(z_pad & (1 << b)))
+      continue;
+    int x = (1.2*button_texture->tile_width) / 2 + i * 12;
+    int y = Z64_SCREEN_HEIGHT - 10 - (gfx_font_xheight(font) + button_texture->tile_width + 3) / 2;
+    struct gfx_sprite sprite =
+    {
+      button_texture, b,
+      12 * font->char_width + x, y,
+      1.2f, 1.2f,
+    };
+    gfx_mode_set(GFX_MODE_COLOR, GPACK_RGB24A8(input_button_color[b],alpha));
+    gfx_sprite_draw(&sprite);
   }
 }
 
@@ -80,7 +106,7 @@ HOOK static void init(void)
       gfx_mode_configure(GFX_MODE_FILTER, G_TF_POINT);
       gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_TEXEL0ONLY,
                                                      G_CC_TEXEL0ONLY));
-      gfx_mode_configure(GFX_MODE_TEXT, GFX_TEXT_FAST);
+      gfx_mode_configure(GFX_MODE_TEXT, GFX_TEXT_NORMAL);
   }
 
   font = resource_get(RES_FONT_FIPPS);
@@ -88,9 +114,20 @@ HOOK static void init(void)
 
 }
 
-// Try to write Hello World using native GFx.
 ENTRY void _start()
 {
+
+// Call the function we overwrote in the Shindou version.
+#ifdef SM64_S
+  uint32_t addr = SM64_FuncCalledAtSoundInitHook;
+  __asm__ volatile ("addiu  $sp, $sp, -0x18   \n"
+                    "sw     $ra, 0x14($sp)    \n"
+                    "jal    %0                \n"
+                    "lw     $ra, 0x14($sp)    \n"
+                    "addiu  $sp, $sp, 0x18    \n"
+                    :: "r"(addr));
+
+#endif // SM64_S
 
   init_gp();
 

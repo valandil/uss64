@@ -29,17 +29,17 @@ SM64_DMAHookJump            equ {SM64_DMAHookJump}
 SM64_ROMPadding             equ {SM64_ROMPaddingStart}
 SM64_ROMMainHook            equ {SM64_ROMMainHook}
 SM64_CleanUpDisplayListHook equ {SM64_CleanUpDisplayListHook}
+SM64_SoundInitHook          equ {SM64_SoundInitHook}
 SM64_DMACopy                equ {SM64_DMACopy}
 SM64_osInvalDCache          equ {osInvalDCache_addr}
 USS64_DisplayAddr           equ {USS64_DisplayAddr}
 
 .open SM64_ROM, USS64_ROM, SM64_RAMEntryPoint
 
-// Labels to be placed in a separate asm file eventually.
-// void DMACopy(unsigned int RAM_offset, unsigned int ROM_bottom, unsigned int ROM_top);
+// Label for SM64's DMACopy function.
 .definelabel DMACopy,      SM64_DMACopy
 
-// Replace the unused space at 0x80246050 with our DMA.
+// Replace the unused space right after game initialization with our DMA code.
 .org SM64_DMAHookCode
 LoadNewCodeInExpRam:
 
@@ -55,7 +55,7 @@ sw    ra, 0x0014(sp)
 jal SM64_osInvalDCache
 nop
 
-.endif 
+.endif
 
 // DMA the payload to exp. pak RAM.
 la    a0, NewCodeVaddrStart
@@ -74,9 +74,9 @@ addiu sp, sp, 0x18
 .org SM64_DMAHookJump
 jal LoadNewCodeInExpRam
 
-// Replace unused Mario behaviour with the our payload, executed at each frame.
-.orga SM64_ROMMainHook
-.dw 0x80400000
+// Replace the useless branch by our hook.
+.org SM64_SoundInitHook
+jal 0x80400000
 
 // Replace the call to 0x8024784C with a call to our function.
 .org SM64_CleanUpDisplayListHook
