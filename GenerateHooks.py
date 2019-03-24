@@ -91,6 +91,7 @@ strings_to_replace = ["SM64_RAMEntryPoint",          \
                       "SM64_ROMMainHook",            \
                       "SM64_CleanUpDisplayListHook", \
                       "SM64_DMACopy",                \
+                      "SM64_SoundInitHook",          \
                       "osInvalDCache_addr"
                       ]
 addrs_to_replace = []
@@ -112,16 +113,16 @@ FileNames = ["USS64_BIN",    \
 sub_cmd = "readlink -f {}".format(args.elf)
 bin_name = os.path.splitext(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))[0]+".bin"
 
-# -- Determine if we on mingw python. 
-#if (sys.platform == "win32" and os.path.sep == "/" and os.name == "nt"):
-bin_name = r"c:\\msys64\\"+bin_name
+# -- Determine if we're on mingw python.
+if (sys.platform == "win32"):
+  bin_name = r"c:\\msys64\\"+bin_name
 
 # -- Final names of the output files.
 FilesToReplace = []
 FilesToReplace.append(bin_name)
 FilesToReplace += ["SM64_{}".format(args.version), \
                   "uss64_{}".format(args.version), \
-                  "SM64_{}".format(args.version)
+                  "SM64_{}".format(args.version), \
                  ]
 
 # -- Concatenate the uss64 addresses with the SM64 addresses and zip them
