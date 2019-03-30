@@ -53,7 +53,7 @@ if (args.verbose == 1):
   print(args.version)
 
 # -- Names of the functions which we want to hook into SM64.
-hooks     = ["_start",      "display_hook",      "gfx_flush",       "uss64_ready", "gfx_disp",       "gfx_disp_w"]
+hooks     = ["_start",      "display_hook",      "gfx_flush",       "uss64",       "gfx_disp",       "gfx_disp_w"]
 HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_gfx_flush", "USS64_Ready", "USS64_gfx_disp", "USS64_gfx_disp_w"]
 addrs = []
 
@@ -81,6 +81,8 @@ for i in range(len(hooks)):
       addrs.append("0x"+match.group(0))
       break
 
+if (args.verbose == 2):
+  print(dict(zip(hooks,addrs)))
 # -- Determine the SM64 addresses that we hook on by
 # -- preprocessing the sm64.h header by specifing the proper
 # -- macro definition for the SM64 version we are currently using.
@@ -101,6 +103,9 @@ addrs_to_replace = []
 for i in range(len(strings_to_replace)):
   sub_cmd = "printf \"#include \\\"src/sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | {} -E -DSM64_{} -xc - | tail -n 1".format(args.mips64_gcc,args.version)
   addrs_to_replace.append(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))
+
+if (args.verbose ==2):
+  print(dict(zip(strings_to_replace,addrs_to_replace)))
 
 # -- Version strings, and file paths.
 FileNames = ["USS64_BIN",    \

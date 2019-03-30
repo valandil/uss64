@@ -48,18 +48,24 @@ DEBUG_SCRIPTS_OUT = debug_scripts_out
 EMU_SCRIPTDIR     = c/Users/Joey/Documents/VGs/Emulation/Project64d/Scripts
 
 # Source file lists.
-USS64FILES        = $(SRCDIR)/uss64.c $(SRCDIR)/sm64.c
+USS64FILES        = $(SRCDIR)/uss64_commands.c $(SRCDIR)/uss64.c               \
+                    $(SRCDIR)/sm64.c $(SRCDIR)/gz_api.c                        \
+                    $(SRCDIR)/settings_uss64.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
 				            $(N64_SYSROOT)/include/vector/vector.c                     \
-				            $(N64_SYSROOT)/include/startup.c
+				            $(N64_SYSROOT)/include/startup.c                           \
+				            $(N64_SYSROOT)/include/list/list.c
 STDHEADERS       := $(patsubst %.c, %.h, $(STDFILES))
 STDHEADERS       += $(N64_SYSROOT)/include/n64.h
 GZFILES           = gz/src/gz/gfx.c                                            \
+                    gz/src/gz/input.c                                          \
                     gz/src/gz/resource.c                                       \
                     gz/src/gz/gu.c                                             \
-                    gz/src/gz/zu.c
+                    gz/src/gz/zu.c                                             \
+                    gz/src/gz/menu*.c
 GZHEADERS         = $(wildcard gz/res/gz/*.h)
-RESFILES          = gz/res/gz/fipps.png gz/res/gz/button_icons.png
+RESFILES          = gz/res/gz/fipps.png gz/res/gz/button_icons.png             \
+                    gz/res/gz/pressstart2p.png
 HEADERS           = $(SRCDIR)/sm64.h
 
 # Source files variables.

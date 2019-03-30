@@ -11,7 +11,7 @@ Development:
    - Otherwise, capture the raw input data from the console.
  - [ ] Spawn a simple menu. Just a return option.
  - [X] Code input display.
- - [ ] Find more intelligent way to hook. Mario's behaviour is not run at every frame. 
+ - [X] Find more intelligent way to hook. Mario's behaviour is not run at every frame.
  - Finish Fast3D support in `gbi.h`:
    - [X] `G_MW_FORCEMTX` and related macros.
    - [X] Fix `g{,s}SPMatrix`.
@@ -85,5 +85,5 @@ Ideas for a future release:
    - [ ] TTC clock speed.
    - [ ] WDW water level.
    - [ ] Non-stop (toggle).
-   - [ ] Save best times (with and without 100c star) to SD card (or EEPROM).
+   - [ ] Save best times (with and without 100c star) to SD card ~~(or EEPROM)~~.
    - [ ] Detect if there is extra lag?
