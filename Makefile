@@ -64,8 +64,7 @@ GZFILES           = gz/src/gz/gfx.c                                            \
                     gz/src/gz/zu.c                                             \
                     gz/src/gz/menu*.c
 GZHEADERS         = $(wildcard gz/res/gz/*.h)
-RESFILES          = gz/res/gz/fipps.png gz/res/gz/button_icons.png             \
-                    gz/res/gz/pressstart2p.png
+RESFILES          = gz/res/gz/*.png
 HEADERS           = $(SRCDIR)/sm64.h
 
 # Source files variables.
@@ -170,7 +169,7 @@ $$(GZ_OBJECTS-$(1))   : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 $$(GZ_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
 
 $$(RES_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o  : % | $$$$(dir $$$$@)
-	$$(GRC) -d $$(RESDESC) $$^ -o $$@
+	$$(GRC) $$< -d $$(RESDESC) -o $$@
 
 $$(RES_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
 

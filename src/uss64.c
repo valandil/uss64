@@ -46,7 +46,7 @@ HOOK static void display_hook(void)
   }
 }
 
-static void main(void)
+HOOK static void main(void)
 {
   input_update();
   gfx_mode_init();
@@ -138,7 +138,7 @@ static void main_return_proc(struct menu_item *item, void *data)
   uss64_hide_menu();
 }
 
-static void init(void)
+HOOK static void init(void)
 {
   // Initialize the static variables (I think).
   clear_bss();
