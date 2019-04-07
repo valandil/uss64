@@ -10,6 +10,7 @@
 #define SM64_gDisplayListHead_tail_ptr			    0x8033B06C
 #define SM64_gPlayer1Controller_addr            0x8032D5E4
 #define SM64_gPlayer2Controller_addr            0x8032D5EC
+#define SM64_gMarioStates_addr                  0x8033B170
 
 // Functions
 #define PrintXY_addr                            0x802D66C0
@@ -39,6 +40,7 @@
 #define SM64_gDisplayListHead_tail_ptr          0x80339CFC
 #define SM64_gPlayer1Controller_addr            0x8032C6A4
 #define SM64_gPlayer2Controller_addr            0x8032C6AC
+#define SM64_gMarioStates_addr                  0x80339E00
 
 // Functions
 #define PrintXY_addr                            0x802D5BE0
@@ -74,6 +76,8 @@
 #define SM64_gDisplayListHead_tail_ptr          0x8031D5B4
 #define SM64_gPlayer1Controller_addr            0x8030CD14
 #define SM64_gPlayer2Controller_addr            0x8030CD1C
+#define SM64_gMarioStates_addr                  0x8031D9C0
+
 
 // Functions
 #define PrintXY_addr                            0x802BB908

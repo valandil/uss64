@@ -1,5 +1,5 @@
 #include "uss64.h"
-#include "settings_uss64.h"
+#include "settings.h"
 #include "gz/src/gz/menu.h"
 #include "gz/src/gz/gfx.h"
 #include "gz/src/gz/input.h"
@@ -11,7 +11,7 @@ void uss64_apply_settings()
   menu_set_font(uss64.menu_main, font);
   menu_set_cell_width(uss64.menu_main, font->char_width + font->letter_spacing);
   menu_set_cell_height(uss64.menu_main, font->char_height + font->line_spacing);
-  //gfx_mode_set(GFX_MODE_DROPSHADOW, settings->bits.drop_shadow);
+  gfx_mode_set(GFX_MODE_DROPSHADOW, settings->bits.drop_shadow);
   if (settings->bits.font_resource == RES_FONT_FIPPS)
     gfx_mode_configure(GFX_MODE_TEXT, GFX_TEXT_NORMAL);
   else

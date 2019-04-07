@@ -11,7 +11,7 @@
 #include "sm64.h"
 #include "input.h"
 #include "uss64.h"
-#include "settings_uss64.h"
+#include "settings.h"
 
 // uss64 variables. The ready variable must be accessible from the get-go.
 __attribute__((section(".data")))
@@ -19,8 +19,6 @@ struct uss64 uss64 =
 {
   .ready = 0,
 };
-
-static struct gfx_font *font_static;
 
 HOOK static void display_hook(void)
 {
@@ -36,12 +34,9 @@ HOOK static void display_hook(void)
   if (uss64.ready)
   {
     // Try to manually write the DL
-    gDPSetFillColor(SM64_gDisplayListHead++, GPACK_RGBA5551(255,0,0,1) << 16 | GPACK_RGBA5551(255,0,0,1));
-    gDPFillRectangle(SM64_gDisplayListHead++, 0, 0, 10, 10);
-
-    // Test out gfx_printf
-    struct gfx_font *font = menu_get_font(uss64.menu_main, 1);
-    gfx_printf(font_static, 40, 20, "hello world");
+    Gfx * dl = get_display_list_for_injection();
+    gDPSetFillColor(dl++, GPACK_RGBA5551(255,0,0,1) << 16 | GPACK_RGBA5551(255,0,0,1));
+    gDPFillRectangle(dl++, 0, 0, 10, 10);
     gfx_flush();
   }
 }
@@ -113,22 +108,23 @@ HOOK static void main(void)
     {
       15, 14, 12, 3, 2, 1, 0, 13, 5, 4, 11, 10, 9, 8,
     };
-    uint16_t z_pad = SM64_gPlayer1Controller->buttonDown;
+    uint16_t z_pad = input_pad();
     for (int i = 0; i < sizeof(buttons) / sizeof(*buttons); ++i)
     {
       int b = buttons[i];
       if (!(z_pad & (1 << b)))
         continue;
-      int x = (1.2*button_texture->tile_width) / 2 + i * 12;
-      int y = Z64_SCREEN_HEIGHT - 10 - (gfx_font_xheight(font) + button_texture->tile_width + 3) / 2;
+      int x = (cw - button_texture->tile_width) / 2 + i * 14;
+      int y = - (gfx_font_xheight(font) + button_texture->tile_width + 3) / 2;
       struct gfx_sprite sprite =
       {
         button_texture, b,
-        12 * font->char_width + x, y,
+        settings->input_display_x + 10 * cw + x, settings->input_display_y + y,
         1.2f, 1.2f,
       };
-      gfx_mode_set(GFX_MODE_COLOR, GPACK_RGB24A8(input_button_color[b],alpha));
+      gfx_mode_replace(GFX_MODE_COLOR, GPACK_RGB24A8(input_button_color[b],alpha));
       gfx_sprite_draw(&sprite);
+      gfx_mode_pop(GFX_MODE_COLOR);
     }
   }
 }
@@ -151,8 +147,8 @@ HOOK static void init(void)
   {
       gfx_start();
       gfx_mode_configure(GFX_MODE_FILTER, G_TF_POINT);
-      gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_TEXEL0ONLY,
-                                                     G_CC_TEXEL0ONLY));
+      gfx_mode_configure(GFX_MODE_COMBINE, G_CC_MODE(G_CC_MODULATEIA_PRIM,
+                                                     G_CC_MODULATEIA_PRIM));
   }
 
   // Create menus.
@@ -161,7 +157,7 @@ HOOK static void init(void)
     static struct menu menu;
     static struct menu global;
     menu_init(&menu, MENU_NOVALUE, MENU_NOVALUE, MENU_NOVALUE);
-    menu_init(&menu, MENU_NOVALUE, MENU_NOVALUE, MENU_NOVALUE);
+    menu_init(&global, MENU_NOVALUE, MENU_NOVALUE, MENU_NOVALUE);
     uss64.menu_main = &menu;
     uss64.menu_global = &global;
 
@@ -172,7 +168,6 @@ HOOK static void init(void)
   settings_load_default();
   uss64_apply_settings();
 
-  font_static = resource_get(RES_FONT_PRESSSTART2P);
   uss64.ready = 1;
 }
 

@@ -3,7 +3,7 @@
 #include "sm64.h"
 
 // gfx functions
-Gfx* get_display_list_for_injection(void)
+Gfx * get_display_list_for_injection(void)
 {
   return SM64_gDisplayListHead;
 }
@@ -16,7 +16,7 @@ int8_t get_raw_input_x(void)
 
 int8_t get_raw_input_y(void)
 {
-  return SM64_gPlayer1Controller->controllerData->rawStickX;
+  return SM64_gPlayer1Controller->controllerData->rawStickY;
 }
 
 uint16_t get_input_z_pad(void)

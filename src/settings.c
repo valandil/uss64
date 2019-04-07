@@ -1,4 +1,4 @@
-#include "settings_uss64.h"
+#include "settings.h"
 #include "gz/src/gz/input.h"
 #include "gz/src/gz/resource.h"
 #include "gz/src/gz/z64.h"
@@ -35,7 +35,7 @@ void settings_load_default(void)
   d->menu_x = 16;
   d->menu_y = 64;
   d->input_display_x = 16;
-  d->input_display_y = Z64_SCREEN_HEIGHT - 6;
+  d->input_display_y = Z64_SCREEN_HEIGHT - 12;
   d->cheats = 0;
   d->binds[COMMAND_MENU] = input_bind_make(2, BUTTON_R, BUTTON_L);
   d->binds[COMMAND_RETURN] = input_bind_make(2, BUTTON_R, BUTTON_D_LEFT);

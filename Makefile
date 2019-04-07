@@ -50,7 +50,7 @@ EMU_SCRIPTDIR     = c/Users/Joey/Documents/VGs/Emulation/Project64d/Scripts
 # Source file lists.
 USS64FILES        = $(SRCDIR)/uss64_commands.c $(SRCDIR)/uss64.c               \
                     $(SRCDIR)/sm64.c $(SRCDIR)/gz_api.c                        \
-                    $(SRCDIR)/settings_uss64.c
+                    $(SRCDIR)/settings.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
 				            $(N64_SYSROOT)/include/vector/vector.c                     \
 				            $(N64_SYSROOT)/include/startup.c                           \
