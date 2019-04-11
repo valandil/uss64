@@ -31,7 +31,7 @@ struct settings_bits
   uint32_t drop_shadow   : 1;
   uint32_t input_display : 1;
   uint32_t lag_counter   : 1;
-  uint32_t non_stop      : 1:
+  uint32_t non_stop      : 1;
 };
 
 struct settings_data

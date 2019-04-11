@@ -3,9 +3,9 @@
 #include "sm64.h"
 
 // gfx functions
-Gfx * get_display_list_for_injection(void)
+Gfx ** get_display_list_for_injection(void)
 {
-  return SM64_gDisplayListHead;
+  return &SM64_gDisplayListHead;
 }
 
 // input functions

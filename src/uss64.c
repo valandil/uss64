@@ -34,9 +34,9 @@ HOOK static void display_hook(void)
   if (uss64.ready)
   {
     // Try to manually write the DL
-    Gfx * dl = get_display_list_for_injection();
-    gDPSetFillColor(dl++, GPACK_RGBA5551(255,0,0,1) << 16 | GPACK_RGBA5551(255,0,0,1));
-    gDPFillRectangle(dl++, 0, 0, 10, 10);
+    Gfx ** dl = get_display_list_for_injection();
+    gDPSetFillColor((*dl)++, GPACK_RGBA5551(255,0,0,1) << 16 | GPACK_RGBA5551(255,0,0,1));
+    gDPFillRectangle((*dl)++, 0, 0, 10, 10);
     gfx_flush();
   }
 }

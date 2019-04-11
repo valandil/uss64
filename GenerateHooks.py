@@ -119,7 +119,7 @@ sub_cmd = "readlink -f {}".format(args.elf)
 bin_name = os.path.splitext(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))[0]+".bin"
 
 # -- Determine if we're on mingw python.
-if (sys.platform == "win32"):
+if (sys.platform == "msys"):
   bin_name = r"c:\\msys64\\"+bin_name
 
 # -- Final names of the output files.
