@@ -72,6 +72,7 @@ Ideas for a future release:
    - [ ] Lag as lives
    - [ ] Speed display
    - [ ] Speed as stars
+   - [ ] Number of inputs per second
  - Cosmetic
    - [ ] No music (toggle)
    - [ ] All Stars coloured (toggle, select color).
