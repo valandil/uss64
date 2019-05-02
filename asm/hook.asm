@@ -23,16 +23,20 @@ USS64_ROM                   equ "{USS64_ROM}.z64"
 SM64_VERSION                equ "{SM64_VERSION}"
 
 // Hooks and such.
-SM64_RAMEntryPoint          equ {SM64_RAMEntryPoint}
-SM64_DMAHookCode            equ {SM64_DMAHookCode}
-SM64_DMAHookJump            equ {SM64_DMAHookJump}
-SM64_ROMPadding             equ {SM64_ROMPaddingStart}
-SM64_ROMMainHook            equ {SM64_ROMMainHook}
-SM64_CleanUpDisplayListHook equ {SM64_CleanUpDisplayListHook}
-SM64_SoundInitHook          equ {SM64_SoundInitHook}
-SM64_DMACopy                equ {SM64_DMACopy}
-SM64_osInvalDCache          equ {osInvalDCache_addr}
-USS64_DisplayAddr           equ {USS64_DisplayAddr}
+SM64_RAMEntryPoint           equ {SM64_RAMEntryPoint}
+SM64_DMAHookCode             equ {SM64_DMAHookCode}
+SM64_DMAHookJump             equ {SM64_DMAHookJump}
+SM64_ROMPadding              equ {SM64_ROMPaddingStart}
+SM64_ROMMainHook             equ {SM64_ROMMainHook}
+SM64_CleanUpDisplayListHook  equ {SM64_CleanUpDisplayListHook}
+SM64_SoundInitHook           equ {SM64_SoundInitHook}
+SM64_DMACopy                 equ {SM64_DMACopy}
+SM64_osInvalDCache           equ {osInvalDCache_addr}
+USS64_DisplayAddr            equ {USS64_DisplayAddr}
+SM64_interaction_star_hook1  equ {SM64_interaction_star_hook1}
+SM64_interaction_star_hook2  equ {SM64_interaction_star_hook2}
+USS64_interaction_star_hook1 equ {USS64_interaction_star_hook1}
+USS64_interaction_star_hook2 equ {USS64_interaction_star_hook2}
 
 .open SM64_ROM, USS64_ROM, SM64_RAMEntryPoint
 
@@ -81,6 +85,13 @@ jal 0x80400000
 // Replace the call to 0x8024784C with a call to our function.
 .org SM64_CleanUpDisplayListHook
 jal USS64_DisplayAddr
+
+// Hooks into interaction_star_or_key for non-stop.
+.org SM64_interaction_star_hook1
+jal USS64_interaction_star_hook1
+
+.org SM64_interaction_star_hook2
+jal USS64_interaction_star_hook2
 
 // Import the payload at the end of the ROM.
 .orga SM64_ROMPadding

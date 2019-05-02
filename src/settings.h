@@ -42,6 +42,8 @@ struct settings_data
   int16_t              menu_y;
   int16_t              input_display_x;
   int16_t              input_display_y;
+  int16_t              lag_counter_x;
+  int16_t              lag_counter_y;
   uint16_t             binds[SETTINGS_BIND_MAX];
 };
 

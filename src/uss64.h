@@ -10,6 +10,9 @@ struct uss64
   _Bool          menu_active;
   struct menu   *menu_main;
   struct menu   *menu_global;
+  int32_t        frame_counter;
+  int32_t        lag_vi_offset;
+  int32_t        cpu_counter;
 };
 
 extern struct uss64            uss64;

@@ -24,6 +24,7 @@ XDELTA            := xdelta3
 # Compiler/linker flags (verify that -mabi=32 is necessary).
 N64_SYSROOT      ?= /opt/n64/mips64/n64-sysroot/usr/
 CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
+                    -mno-check-zero-division -mdivide-breaks                   \
                     -DF3D_GBI                                                  \
                     -DZ64_VERSION=Z64_OOT10                                    \
                     -DSETTINGS_HEADER=../../../src/settings.h                  \

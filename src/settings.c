@@ -1,7 +1,7 @@
 #include "settings.h"
 #include "gz/src/gz/input.h"
+#include "gz/src/gz/gz_api.h"
 #include "gz/src/gz/resource.h"
-#include "gz/src/gz/z64.h"
 
 static _Alignas(16)
 struct settings       settings_store;
@@ -32,10 +32,14 @@ void settings_load_default(void)
   d->bits.font_resource = RES_FONT_PRESSSTART2P;
   d->bits.drop_shadow = 1;
   d->bits.input_display = 1;
+  d->bits.lag_counter = 1;
+  d->bits.non_stop = 1;
   d->menu_x = 16;
   d->menu_y = 64;
   d->input_display_x = 16;
-  d->input_display_y = Z64_SCREEN_HEIGHT - 12;
+  d->input_display_y = GAME_SCREEN_HEIGHT - 12;
+  d->lag_counter_x = GAME_SCREEN_WIDTH - 12;
+  d->lag_counter_y = GAME_SCREEN_HEIGHT - 14;
   d->cheats = 0;
   d->binds[COMMAND_MENU] = input_bind_make(2, BUTTON_R, BUTTON_L);
   d->binds[COMMAND_RETURN] = input_bind_make(2, BUTTON_R, BUTTON_D_LEFT);

@@ -1,15 +1,15 @@
 Development:
  - [X] Check the textures that SM64 understands (fipps is ia4, for instance).
  - [ ] Add support for SM64 Europe.
- - [ ] Write a sane build pipeline (Makefile).
-   - [ ] Give $(BINDIR), $(ASMDIR) and $(PATCHDIR) as an argument to GenerateHooks in Makefile.
+ - [X] Write a sane build pipeline (Makefile).
+   - [X] Give $(BINDIR), $(ASMDIR) and $(PATCHDIR) as an argument to GenerateHooks in Makefile.
    - [X] Create a loop for all supported versions.
    - [X] Simplify directory structure of Makefile output, specifically the patch part.
- - [ ] Generate patches in different formats (xdelta, bps, ...).
+ - [ ] Generate patches in different formats (~~xdelta~~, bps, ...).
  - [X] Capture input
-   - First try through Mario's object, but not sure that's active all the time.
+   - ~~First try through Mario's object, but not sure that's active all the time.~~
    - Otherwise, capture the raw input data from the console.
- - [ ] Spawn a simple menu. Just a return option.
+ - [X] Spawn a simple menu. Just a return option.
  - [X] Code input display.
  - [X] Find more intelligent way to hook. Mario's behaviour is not run at every frame.
  - Finish Fast3D support in `gbi.h`:
@@ -86,4 +86,5 @@ Ideas for a future release:
    - [ ] WDW water level.
    - [ ] Non-stop (toggle).
    - [ ] Save best times (with and without 100c star) to SD card ~~(or EEPROM)~~.
-   - [ ] Detect if there is extra lag?
+   - [ ] Detect if there is extra lag? (Not really possible unless you send the
+         same DLs (+ uss64) and check the difference in lag).

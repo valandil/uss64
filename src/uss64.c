@@ -3,7 +3,7 @@
 #include <n64/message.h>
 #include <n64/pi.h>
 #include <startup.h>
-#include "gz/src/gz/z64.h"
+#include "gz/src/gz/gz_api.h"
 #include "gz/src/gz/input.h"
 #include "gz/src/gz/resource.h"
 #include "gz/src/gz/gfx.h"
@@ -19,6 +19,23 @@ struct uss64 uss64 =
 {
   .ready = 0,
 };
+
+static void update_lag_counter(void)
+{
+
+}
+
+HOOK static void interaction_star_hook1(void)
+{
+  if (!settings->bits.non_stop)
+    func_8024924C(0x7E);
+}
+
+HOOK static void interaction_star_hook2(void)
+{
+  if (!settings->bits.non_stop)
+    set_mario_action();
+}
 
 HOOK static void display_hook(void)
 {
@@ -41,7 +58,7 @@ HOOK static void display_hook(void)
   }
 }
 
-HOOK static void main(void)
+HOOK static void main_hook(void)
 {
   input_update();
   gfx_mode_init();
@@ -96,7 +113,7 @@ HOOK static void main(void)
 
   // Draw input display
   if (settings->bits.input_display)
-  {
+  { 
     // Stick display.
     gfx_printf(font, settings->input_display_x, settings->input_display_y,
                 "%4i %4i", input_x(), input_y());
@@ -127,6 +144,34 @@ HOOK static void main(void)
       gfx_mode_pop(GFX_MODE_COLOR);
     }
   }
+
+  // Draw lag counter.
+  if (settings->bits.lag_counter)
+  {
+    // Count the lag frames.
+    int32_t lag_frames = (int32_t)SM64_sNumVblanks +
+                          uss64.lag_vi_offset - uss64.frame_counter;
+
+    // Adjust x position of the frame counter.
+    int x = settings->lag_counter_x - cw * 8;
+
+    // Print the lag counter.
+    gfx_mode_replace(GFX_MODE_COLOR, GPACK_RGBA8888(0xC0, 0xC0, 0xC0, alpha));
+    gfx_printf(font, x, settings->lag_counter_y, "%8d", lag_frames);
+    gfx_mode_pop(GFX_MODE_COLOR);
+
+  }
+
+  // Reset lag counter when L is pressed.
+  uint16_t pad_pressed = input_pressed();
+  if (pad_pressed & BUTTON_L)
+  {
+    uss64.lag_vi_offset = -(int32_t)SM64_sNumVblanks;
+    uss64.frame_counter = 0;
+  }
+
+  // There are two v-blanks per rendered frame (30 fps).
+  uss64.frame_counter += 2;
 }
 
 static void main_return_proc(struct menu_item *item, void *data)
@@ -142,6 +187,9 @@ HOOK static void init(void)
 
   // Initialize uss64 variables.
   uss64.menu_active = 0;
+  uss64.frame_counter = 0;
+  uss64.lag_vi_offset = -(int32_t)SM64_sNumVblanks;
+  uss64.cpu_counter = osGetCount();
 
   // Initialize gfx.
   {
@@ -153,11 +201,14 @@ HOOK static void init(void)
 
   // Create menus.
   {
-    // Initialize menu.
+
     static struct menu menu;
     static struct menu global;
+
+    // Initialize menu.
     menu_init(&menu, MENU_NOVALUE, MENU_NOVALUE, MENU_NOVALUE);
     menu_init(&global, MENU_NOVALUE, MENU_NOVALUE, MENU_NOVALUE);
+
     uss64.menu_main = &menu;
     uss64.menu_global = &global;
 
@@ -165,6 +216,7 @@ HOOK static void init(void)
     menu.selector = menu_add_button(&menu, 0, 0, "return", main_return_proc, NULL);
   }
 
+  // Load settings.
   settings_load_default();
   uss64_apply_settings();
 
@@ -195,7 +247,7 @@ ENTRY void _start()
 
   else
   {
-    main();
+    main_hook();
   }
 
 }

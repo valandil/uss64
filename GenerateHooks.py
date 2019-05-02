@@ -53,8 +53,8 @@ if (args.verbose == 1):
   print(args.version)
 
 # -- Names of the functions which we want to hook into SM64.
-hooks     = ["_start",      "display_hook",      "gfx_flush",       "uss64",       "gfx_disp",       "gfx_disp_w"]
-HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_gfx_flush", "USS64_Ready", "USS64_gfx_disp", "USS64_gfx_disp_w"]
+hooks     = ["_start",      "display_hook",      "interaction_star_hook1",       "interaction_star_hook2",       "gfx_flush",       "uss64",       "gfx_disp",       "gfx_disp_w"]
+HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_interaction_star_hook1", "USS64_interaction_star_hook2", "USS64_gfx_flush", "USS64_Ready", "USS64_gfx_disp", "USS64_gfx_disp_w"]
 addrs = []
 
 # -- Use nm to output the symbol table of uss64.
@@ -94,7 +94,9 @@ strings_to_replace = ["SM64_RAMEntryPoint",          \
                       "SM64_CleanUpDisplayListHook", \
                       "SM64_DMACopy",                \
                       "SM64_SoundInitHook",          \
-                      "osInvalDCache_addr"
+                      "osInvalDCache_addr",          \
+                      "SM64_interaction_star_hook1", \
+                      "SM64_interaction_star_hook2"  \
                       ]
 addrs_to_replace = []
 
