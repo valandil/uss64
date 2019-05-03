@@ -93,6 +93,38 @@ jal USS64_interaction_star_hook1
 .org SM64_interaction_star_hook2
 jal USS64_interaction_star_hook2
 
+// Test hook.
+.org 0x802460D4
+lw    t1, 0x24(sp)  // Value of addr
+
+addiu sp, sp, -0x18
+sw    ra, 0x0014(sp)
+
+// Change addr is D-Down is pressed.
+lui t0, 0x8034
+lb  at, 0x9c31(t0)
+
+addiu v0, r0, 0x0400
+bne at, v0, End
+nop
+
+lui t1, 0x0e00
+ori t1, t1, 0x0234
+
+End:
+
+jal 0x803805C8
+sw a0, 0x00(t1)
+
+lw ra, 0x0014(sp)
+addiu sp, sp, 0x18
+jr ra
+
+
+.org 0x80248B9C
+jal 0x802460D4
+
+
 // Import the payload at the end of the ROM.
 .orga SM64_ROMPadding
 .headersize 0
