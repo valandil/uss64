@@ -126,7 +126,7 @@
 #define SM64_gDisplayListHead                   (*(Gfx **)         SM64_gDisplayListHead_tail_ptr)
 #define SM64_gPlayer1Controller                 (*(Controller **)  SM64_gPlayer1Controller_addr)
 #define SM64_gPlayer2Controller                 (*(Controller **)  SM64_gPlayer2Controller_addr)
-#define SM64_sNumVblanks                        (*(uint32_t*)        SM64_sNumVblanks_addr)
+#define SM64_sNumVblanks                        (*(uint32_t*)      SM64_sNumVblanks_addr)
 
 // Function declarations.
 void       (*PrintXY)           (unsigned int x, unsigned int y, const char *str);

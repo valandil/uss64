@@ -85,7 +85,7 @@ Ideas for a future release:
    - [ ] Spawn fat penguin (toggle).
    - [ ] TTC clock speed.
    - [ ] WDW water level.
-   - [ ] Non-stop (toggle).
+   - [X] Non-stop (toggle).
    - [ ] Save best times (with and without 100c star) to SD card ~~(or EEPROM)~~.
    - [ ] Detect if there is extra lag? (Not really possible unless you send the
          same DLs (+ uss64) and check the difference in lag).

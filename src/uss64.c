@@ -20,11 +20,6 @@ struct uss64 uss64 =
   .ready = 0,
 };
 
-static void update_lag_counter(void)
-{
-
-}
-
 HOOK static void interaction_star_hook1(void)
 {
   if (!settings->bits.non_stop)
@@ -34,6 +29,8 @@ HOOK static void interaction_star_hook1(void)
 HOOK static void interaction_star_hook2(void)
 {
   if (!settings->bits.non_stop)
+    // This is fragile, as I assume that the a0-a2 registers are untouched
+    // by this function. Other code should go below this function call.
     set_mario_action();
 }
 
@@ -96,6 +93,18 @@ HOOK static void main_hook(void)
   else if (input_bind_pressed_raw(COMMAND_MENU))
     uss64_show_menu();
 
+  /* handle commands */
+  for (int i = 0; i < COMMAND_MAX; ++i) {
+    _Bool active = 0;
+    switch (command_info[i].activation_type) {
+      case CMDACT_HOLD:       active = input_bind_held(i);        break;
+      case CMDACT_PRESS:      active = input_bind_pressed(i);     break;
+      case CMDACT_PRESS_ONCE: active = input_bind_pressed_raw(i); break;
+    }
+    if (command_info[i].proc && active)
+      command_info[i].proc();
+  }
+
   // Animate menus
   while (uss64.menu_active && menu_think(uss64.menu_main));
   while (menu_think(uss64.menu_global));
@@ -113,7 +122,7 @@ HOOK static void main_hook(void)
 
   // Draw input display
   if (settings->bits.input_display)
-  { 
+  {
     // Stick display.
     gfx_printf(font, settings->input_display_x, settings->input_display_y,
                 "%4i %4i", input_x(), input_y());
@@ -162,14 +171,6 @@ HOOK static void main_hook(void)
 
   }
 
-  // Reset lag counter when L is pressed.
-  uint16_t pad_pressed = input_pressed();
-  if (pad_pressed & BUTTON_L)
-  {
-    uss64.lag_vi_offset = -(int32_t)SM64_sNumVblanks;
-    uss64.frame_counter = 0;
-  }
-
   // There are two v-blanks per rendered frame (30 fps).
   uss64.frame_counter += 2;
 }
@@ -201,7 +202,6 @@ HOOK static void init(void)
 
   // Create menus.
   {
-
     static struct menu menu;
     static struct menu global;
 
@@ -214,6 +214,7 @@ HOOK static void init(void)
 
     // Populate menu.
     menu.selector = menu_add_button(&menu, 0, 0, "return", main_return_proc, NULL);
+    menu_add_submenu(&menu, 0, 1, uss64_settings_menu(), "settings");
   }
 
   // Load settings.

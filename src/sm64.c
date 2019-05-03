@@ -9,4 +9,4 @@ void*    (*alloc_displaylist) (unsigned int size)                              =
 void     (*osInvalDCache)     (void* addr, int nbytes)                         = (void*)osInvalDCache_addr;
 uint32_t (*osGetCount)        ()                                               = (uint32_t*)osGetCount_addr;
 void     (*func_8024924C)     (int16_t)                                        = (void*)func_8024924C_addr;
-uint32_t (*set_mario_action)  ()                                               = (uint32_t)set_mario_action_addr;
+uint32_t (*set_mario_action)  ()                                               = (uint32_t*)set_mario_action_addr;
