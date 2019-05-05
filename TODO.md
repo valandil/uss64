@@ -86,6 +86,7 @@ Ideas for a future release:
    - [ ] TTC clock speed.
    - [ ] WDW water level.
    - [X] Non-stop (toggle).
+   - [X] Special triple jump toggle.
    - [ ] Save best times (with and without 100c star) to SD card ~~(or EEPROM)~~.
    - [ ] Detect if there is extra lag? (Not really possible unless you send the
          same DLs (+ uss64) and check the difference in lag).

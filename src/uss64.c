@@ -173,6 +173,13 @@ HOOK static void main_hook(void)
 
   // There are two v-blanks per rendered frame (30 fps).
   uss64.frame_counter += 2;
+
+  // Set special triple jump.
+  if (settings->bits.special_triple_jump)
+    SM64_gSpecialTripleJump = 1;
+  else
+    SM64_gSpecialTripleJump = 0;
+
 }
 
 static void main_return_proc(struct menu_item *item, void *data)
@@ -216,6 +223,10 @@ HOOK static void init(void)
     menu.selector = menu_add_button(&menu, 0, 0, "return", main_return_proc, NULL);
     menu_add_submenu(&menu, 0, 1, uss64_settings_menu(), "settings");
   }
+
+    /* configure menu related commands */
+    input_bind_set_override(COMMAND_MENU, 1);
+    input_bind_set_override(COMMAND_RETURN, 1);
 
   // Load settings.
   settings_load_default();

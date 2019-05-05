@@ -21,7 +21,7 @@ void uss64_apply_settings()
   struct gfx_font *font = resource_get(settings->bits.font_resource);
   menu_set_font(uss64.menu_main, font);
   menu_set_cell_width(uss64.menu_main, font->char_width + font->letter_spacing);
-  menu_set_cell_height(uss64.menu_main, font->char_height + font->line_spacing);
+  menu_set_cell_height(uss64.menu_main, font->char_height + font->line_spacing + settings->line_spacing);
   gfx_mode_set(GFX_MODE_DROPSHADOW, settings->bits.drop_shadow);
   if (settings->bits.font_resource == RES_FONT_FIPPS)
     gfx_mode_configure(GFX_MODE_TEXT, GFX_TEXT_NORMAL);

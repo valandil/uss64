@@ -5,6 +5,7 @@
 #include "sm64.h"
 #include "uss64.h"
 
+#include <stdlib.h>
 
 static uint16_t font_options[] =
 {
@@ -60,6 +61,36 @@ static int drop_shadow_proc(struct menu_item *item,
   }
   else if (reason == MENU_CALLBACK_THINK)
     menu_checkbox_set(item, settings->bits.drop_shadow);
+  return 0;
+}
+
+static int non_stop_proc(struct menu_item *item,
+                         enum menu_callback_reason reason,
+                         void *data)
+{
+  if (reason == MENU_CALLBACK_CHANGED)
+  {
+    settings->bits.non_stop = menu_checkbox_get(item);
+  }
+
+  else if (reason == MENU_CALLBACK_THINK)
+    menu_checkbox_set(item, settings->bits.non_stop);
+
+  return 0;
+}
+
+static int special_triple_jump_proc(struct menu_item *item,
+                                    enum menu_callback_reason reason,
+                                    void *data)
+{
+  if (reason == MENU_CALLBACK_CHANGED)
+  {
+    settings->bits.special_triple_jump = menu_checkbox_get(item);
+  }
+
+  else if (reason == MENU_CALLBACK_THINK)
+    menu_checkbox_set(item, settings->bits.special_triple_jump);
+
   return 0;
 }
 
@@ -138,6 +169,22 @@ static void tab_next_proc(struct menu_item *item, void *data)
   menu_tab_next(data);
 }
 
+static void line_spacing_inc_proc(struct menu_item *item, void *data)
+{
+  settings->line_spacing += 1;
+  struct gfx_font *font = resource_get(settings->bits.font_resource);
+  menu_set_cell_height(uss64.menu_main, font->char_height + font->line_spacing + settings->line_spacing);
+}
+
+static void  line_spacing_dec_proc(struct menu_item *item, void *data)
+{
+  if (settings->line_spacing > 0)
+    settings->line_spacing -= 1;
+
+  struct gfx_font *font = resource_get(settings->bits.font_resource);
+  menu_set_cell_height(uss64.menu_main, font->char_height + font->line_spacing + settings->line_spacing);
+}
+
 struct menu *uss64_settings_menu(void)
 {
   static struct menu menu;
@@ -148,34 +195,49 @@ struct menu *uss64_settings_menu(void)
   menu_init(&commands, MENU_NOVALUE, MENU_NOVALUE, MENU_NOVALUE);
 
   // Populate settings menu.
+  int x_checkbox = 20;
   int y = 0;
   menu.selector = menu_add_submenu(&menu, 0, y, NULL, "return");
 
   /* Appearance controls */
+  // Line spacing
+  menu_add_static(&menu, 0, ++y, "line spacing", 0xC0C0C0);
+  menu_add_watch(&menu, x_checkbox, y, (uint32_t)&settings->line_spacing, WATCH_TYPE_U8);
+  menu_add_button(&menu, x_checkbox + 2, y, "-", line_spacing_dec_proc, NULL);
+  menu_add_button(&menu, x_checkbox + 4, y, "+", line_spacing_inc_proc, NULL);
+
   // Font
   menu_add_static(&menu, 0, ++y, "font", 0xC0C0C0);
-  menu_add_option(&menu, 16,  y, "fipps\0""notalot35\0" "origami mommy\0"
+  menu_add_option(&menu, x_checkbox,  y, "fipps\0""notalot35\0" "origami mommy\0"
                                 "pc senior\0""pixel intv\0""press start 2p\0"
                                 "smw text nc\0""werdna's return\0""pixelzim\0",
                                 font_proc, NULL);
 
-  // Drop shadow
-  menu_add_static(&menu, 0,  ++y, "drop shadow", 0xC0C0C0);
-  menu_add_checkbox(&menu, 16, y, drop_shadow_proc, NULL);
-
   // Menu position
   menu_add_static(&menu, 0, ++y, "menu position", 0xC0C0C0);
-  menu_add_positioning(&menu, 16, y, menu_position_proc, NULL);
+  menu_add_positioning(&menu, x_checkbox + 2, y, menu_position_proc, NULL);
+
+  // Drop shadow
+  menu_add_static(&menu, 0,  ++y, "drop shadow", 0xC0C0C0);
+  menu_add_checkbox(&menu, x_checkbox, y, drop_shadow_proc, NULL);
+
+  // Non-stop
+  menu_add_static(&menu, 0, ++y, "non-stop", 0xC0C0C0);
+  menu_add_checkbox(&menu, x_checkbox, y, non_stop_proc, NULL);
+
+  // Special triple jump
+  menu_add_static(&menu, 0, ++y, "special triple jump", 0xC0C0C0);
+  menu_add_checkbox(&menu, x_checkbox, y, special_triple_jump_proc, NULL);
 
   // Input display
   menu_add_static(&menu, 0, ++y, "input display", 0xC0C0C0);
-  menu_add_checkbox(&menu, 16, y, input_display_proc, NULL);
-  menu_add_positioning(&menu, 18, y, generic_position_proc, &settings->input_display_x);
+  menu_add_checkbox(&menu, x_checkbox, y, input_display_proc, NULL);
+  menu_add_positioning(&menu, x_checkbox + 2, y, generic_position_proc, &settings->input_display_x);
 
   // Lag counter.
   menu_add_static(&menu, 0, ++y, "lag counter", 0xC0C0C0);
-  menu_add_checkbox(&menu, 16, y, lag_counter_proc, NULL);
-  menu_add_positioning(&menu, 18, y, generic_position_proc, &settings->lag_counter_x);
+  menu_add_checkbox(&menu, x_checkbox, y, lag_counter_proc, NULL);
+  menu_add_positioning(&menu, x_checkbox + 2, y, generic_position_proc, &settings->lag_counter_x);
 
   // Commands
   menu_add_submenu(&menu, 0, ++y, &commands, "commands");

@@ -12,6 +12,7 @@
 #define SM64_gPlayer2Controller_addr            0x8032C6AC
 #define SM64_gMarioStates_addr                  0x80339E00
 #define SM64_sNumVblanks_addr                   0x8032C640
+#define SM64_gSpecialTripleJump_addr            0x8032ce34
 
 // Functions
 #define PrintXY_addr                            0x802D5BE0
@@ -48,6 +49,7 @@
 #define SM64_gPlayer2Controller_addr            0x8032D5EC
 #define SM64_gMarioStates_addr                  0x8033B170
 #define SM64_sNumVblanks_addr                   0x8032D580
+#define SM64_gSpecialTripleJump_addr            0x8032dd94
 
 // Functions
 #define PrintXY_addr                            0x802D66C0
@@ -83,6 +85,7 @@
 #define SM64_gPlayer2Controller_addr            0x8030CD1C
 #define SM64_gMarioStates_addr                  0x8031D9C0
 #define SM64_sNumVblanks_addr                   0x8030CCB0
+#define SM64_gSpecialTripleJump_addr            0x8030D4C4
 
 // Functions
 #define PrintXY_addr                            0x802BB908
@@ -127,6 +130,7 @@
 #define SM64_gPlayer1Controller                 (*(Controller **)  SM64_gPlayer1Controller_addr)
 #define SM64_gPlayer2Controller                 (*(Controller **)  SM64_gPlayer2Controller_addr)
 #define SM64_sNumVblanks                        (*(uint32_t*)      SM64_sNumVblanks_addr)
+#define SM64_gSpecialTripleJump                 (*(uint8_t*)       SM64_gSpecialTripleJump_addr)
 
 // Function declarations.
 void       (*PrintXY)           (unsigned int x, unsigned int y, const char *str);

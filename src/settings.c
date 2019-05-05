@@ -34,12 +34,14 @@ void settings_load_default(void)
   d->bits.input_display = 1;
   d->bits.lag_counter = 1;
   d->bits.non_stop = 1;
+  d->bits.special_triple_jump = 0;
   d->menu_x = 16;
   d->menu_y = 64;
+  d->line_spacing = 1;
   d->input_display_x = 16;
   d->input_display_y = GAME_SCREEN_HEIGHT - 12;
   d->lag_counter_x = GAME_SCREEN_WIDTH - 12;
-  d->lag_counter_y = GAME_SCREEN_HEIGHT - 14;
+  d->lag_counter_y = GAME_SCREEN_HEIGHT - 12;
   d->cheats = 0;
   d->binds[COMMAND_MENU] = input_bind_make(2, BUTTON_R, BUTTON_L);
   d->binds[COMMAND_RETURN] = input_bind_make(2, BUTTON_R, BUTTON_D_LEFT);

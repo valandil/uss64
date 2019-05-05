@@ -28,11 +28,12 @@ enum commands
 
 struct settings_bits
 {
-  uint32_t font_resource : 4;
-  uint32_t drop_shadow   : 1;
-  uint32_t input_display : 1;
-  uint32_t lag_counter   : 1;
-  uint32_t non_stop      : 1;
+  uint32_t font_resource       : 4;
+  uint32_t drop_shadow         : 1;
+  uint32_t input_display       : 1;
+  uint32_t lag_counter         : 1;
+  uint32_t non_stop            : 1;
+  uint32_t special_triple_jump : 1;
 };
 
 struct settings_data
@@ -41,6 +42,7 @@ struct settings_data
   struct settings_bits bits;
   int16_t              menu_x;
   int16_t              menu_y;
+  uint8_t              line_spacing;
   int16_t              input_display_x;
   int16_t              input_display_y;
   int16_t              lag_counter_x;
