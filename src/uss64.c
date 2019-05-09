@@ -60,6 +60,18 @@ HOOK static void main_hook(void)
   input_update();
   gfx_mode_init();
 
+  // If the star select command was previously invoke, initiate a warp to the
+  // original level.
+  // Doesn't work. Try to delay the warp by a frame or something.
+  if (uss64.command_starselect_was_called && SM64_sCurrWarpType == 0)
+  {
+    uss64_warp(uss64.level_num_before_warp & 0x7F, 0x01, 0xA, 0);
+    uss64.command_starselect_was_called = 0;
+  }
+
+  // Update the level number.
+  uss64.current_level_num = SM64_gCurrLevelNum;
+
   // Handle menu input.
   if (uss64.menu_active)
   {
@@ -103,6 +115,13 @@ HOOK static void main_hook(void)
     }
     if (command_info[i].proc && active)
       command_info[i].proc();
+  }
+
+  // If the star select command was called, save the current level number
+  // to the uss64 struct. On the next frame, we will initiate another warp.
+  if (uss64.command_starselect_was_called)
+  {
+    uss64.level_num_before_warp = uss64.current_level_num;
   }
 
   // Animate menus
@@ -221,7 +240,8 @@ HOOK static void init(void)
 
     // Populate menu.
     menu.selector = menu_add_button(&menu, 0, 0, "return", main_return_proc, NULL);
-    menu_add_submenu(&menu, 0, 1, uss64_settings_menu(), "settings");
+    menu_add_submenu(&menu, 0, 1, uss64_warps_menu(), "warps");
+    menu_add_submenu(&menu, 0, 2, uss64_settings_menu(), "settings");
   }
 
     /* configure menu related commands */

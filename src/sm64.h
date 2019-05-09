@@ -3,7 +3,7 @@
 
 #include "input.h"
 
-// J version addresses.
+// Japanese version addresses.
 #ifdef  SM64_J
 
 // Variables.
@@ -12,7 +12,10 @@
 #define SM64_gPlayer2Controller_addr            0x8032C6AC
 #define SM64_gMarioStates_addr                  0x80339E00
 #define SM64_sNumVblanks_addr                   0x8032C640
-#define SM64_gSpecialTripleJump_addr            0x8032ce34
+#define SM64_gSpecialTripleJump_addr            0x8032CE34
+#define SM64_gCurrLevelNum_addr                 0x8032CE98
+#define SM64_sCurrPlayMode_addr                 0x80339ec8
+#define SM64_sCurrWarpType_addr                 0x80339ed8
 
 // Functions
 #define PrintXY_addr                            0x802D5BE0
@@ -23,8 +26,12 @@
 #define osInvalDCache_addr                      0x80323480
 #define funcCalledAtCleanUpDisplayListHook      0x8024781C
 #define osGetCount_addr                         0x80327460
-#define func_8024924C_addr                      0x8024924c
+#define func_8024924C_addr                      0x8024924C
 #define set_mario_action_addr                   0x80252AC8
+#define func_8024975C_addr                      0x8024975C
+#define reset_dialog_state_addr                 0x802d8098
+#define set_play_mode_addr                      0x80249734
+#define initiate_warp_addr                      0x8024a594
 
 // Hooks.
 #define SM64_RAMEntryPoint                      0x80245000
@@ -49,7 +56,10 @@
 #define SM64_gPlayer2Controller_addr            0x8032D5EC
 #define SM64_gMarioStates_addr                  0x8033B170
 #define SM64_sNumVblanks_addr                   0x8032D580
-#define SM64_gSpecialTripleJump_addr            0x8032dd94
+#define SM64_gSpecialTripleJump_addr            0x8032DD94
+#define SM64_gCurrLevelNum_addr                 0x8032DDF8
+#define SM64_sCurrPlayMode_addr                 0x8033b238
+#define SM64_sCurrWarpType_addr                 0x8033b248
 
 // Functions
 #define PrintXY_addr                            0x802D66C0
@@ -62,6 +72,10 @@
 #define osGetCount_addr                         0x803283E0
 #define func_8024924C_addr                      0x8024927C
 #define set_mario_action_addr                   0x80252CF4
+#define func_8024975C_addr                      0x8024978C
+#define reset_dialog_state_addr                 0x802d8d90
+#define set_play_mode_addr                      0x80249764
+#define initiate_warp_addr                      0x8024a700
 
 // Hooks.
 #define SM64_RAMEntryPoint                      0x80245000
@@ -77,6 +91,7 @@
 
 #endif // SM64_U
 
+// Shindou version addresses.
 #ifdef SM64_S
 
 // Variables.
@@ -86,6 +101,9 @@
 #define SM64_gMarioStates_addr                  0x8031D9C0
 #define SM64_sNumVblanks_addr                   0x8030CCB0
 #define SM64_gSpecialTripleJump_addr            0x8030D4C4
+#define SM64_gCurrLevelNum_addr                 0x8030D528
+#define SM64_sCurrPlayMode_addr                 0x8031DA96
+#define SM64_sCurrWarpType_addr                 0x8031DAA0
 
 // Functions
 #define PrintXY_addr                            0x802BB908
@@ -98,6 +116,10 @@
 #define osGetCount_addr                         0x80304FB0
 #define func_8024924C_addr                      0x8024C1BC
 #define set_mario_action_addr                   0x80254298
+#define func_8024975C_addr                      0x8024CDF4
+#define reset_dialog_state_addr                 0x802BD4F0
+#define set_play_mode_addr                      0x8024CDDC
+#define initiate_warp_addr                      0x8024DAE0
 
 // Hooks.
 #define SM64_RAMEntryPoint                      0x80248000
@@ -114,10 +136,12 @@
 
 #endif // SM64_S
 
+// iQue version addresses.
 #ifdef SM64_Q
 
 #endif // SM64_Q
 
+// PAL version addresses.
 #ifdef SM64_E
 
 // Variables.
@@ -125,12 +149,20 @@
 
 #endif // SM64_E
 
+// 64DD version addresses.
+#ifdef SM64_D
+
+#endif // SM64_D
+
 // Assignments of variables and functions.
 #define SM64_gDisplayListHead                   (*(Gfx **)         SM64_gDisplayListHead_tail_ptr)
 #define SM64_gPlayer1Controller                 (*(Controller **)  SM64_gPlayer1Controller_addr)
 #define SM64_gPlayer2Controller                 (*(Controller **)  SM64_gPlayer2Controller_addr)
 #define SM64_sNumVblanks                        (*(uint32_t*)      SM64_sNumVblanks_addr)
 #define SM64_gSpecialTripleJump                 (*(uint8_t*)       SM64_gSpecialTripleJump_addr)
+#define SM64_gCurrLevelNum                      (*(int16_t*)       SM64_gCurrLevelNum_addr)
+#define SM64_sCurrPlayMode                      (*(int16_t*)       SM64_sCurrPlayMode_addr)
+#define SM64_sCurrWarpType                      (*(uint8_t*)       SM64_sCurrWarpType_addr)
 
 // Function declarations.
 void       (*PrintXY)           (unsigned int x, unsigned int y, const char *str);
@@ -142,5 +174,9 @@ void       (*osInvalDCache)     (void* addr, int nbytes);
 uint32_t   (*osGetCount)        (void);
 void       (*func_8024924C)     (int16_t);
 uint32_t   (*set_mario_action)  ();
+void       (*func_8024975C)     (int32_t);
+void       (*reset_dialog_state)(void);
+void       (*set_play_mode)     (int32_t);
+void       (*initiate_warp)     (int16_t,int16_t,int16_t,int32_t);
 
 #endif // SM64_H

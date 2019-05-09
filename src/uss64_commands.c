@@ -52,17 +52,34 @@ void uss64_hide_menu(void)
 
 void command_fileselect(void)
 {
-
+  func_8024975C(-2);
 }
 
 void command_reload(void)
 {
+
+  reset_dialog_state();
+
+  initiate_warp(uss64.current_level_num & 0x7F, 0x01, 0x0A, 0);
+
+  set_play_mode(3);
 
 }
 
 void command_starselect(void)
 {
 
+  reset_dialog_state();
+  initiate_warp(LEVEL_PSS & 0x7F, 0x01, 0xA, 0);
+
+  if (uss64.current_level_num != LEVEL_PSS)
+  {
+    set_play_mode(4);
+    uss64.command_starselect_was_called = 1;
+  }
+
+  else
+    set_play_mode(3);
 }
 
 void command_resetlag(void)

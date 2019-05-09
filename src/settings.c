@@ -33,7 +33,7 @@ void settings_load_default(void)
   d->bits.drop_shadow = 1;
   d->bits.input_display = 1;
   d->bits.lag_counter = 1;
-  d->bits.non_stop = 1;
+  d->bits.non_stop = 0;
   d->bits.special_triple_jump = 0;
   d->menu_x = 16;
   d->menu_y = 64;

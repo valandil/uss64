@@ -52,7 +52,8 @@ EMU_SCRIPTDIR     = c/Users/Joey/Documents/VGs/Emulation/Project64d/Scripts
 # Source file lists.
 USS64FILES        = $(SRCDIR)/uss64_commands.c $(SRCDIR)/uss64.c               \
                     $(SRCDIR)/sm64.c $(SRCDIR)/gz_api.c                        \
-                    $(SRCDIR)/settings.c $(SRCDIR)/uss64_settings.c
+                    $(SRCDIR)/settings.c $(SRCDIR)/uss64_settings.c            \
+                    $(SRCDIR)/uss64_warps.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
 				            $(N64_SYSROOT)/include/vector/vector.c                     \
 				            $(N64_SYSROOT)/include/startup.c                           \
@@ -78,7 +79,7 @@ RESSRC           := $(foreach  s, $(RESFILES),  $(wildcard $(s)))
 OBJECTS           = $(USS64_OBJECTS) $(STD_OBJECTS) $(GZ_OBJECTS) $(RES_OBJECTS)
 
 # Versions of SM64 to inject into.
-USS64_VERSIONS    = SM64_U SM64_J SM64_S #SM64_Q SM64_E
+USS64_VERSIONS    = SM64_U SM64_J SM64_S #SM64_Q SM64_E SM64_D
 
 # Default targets.
 USS64             = $(foreach v,$(USS64_VERSIONS),uss64-$(v))
