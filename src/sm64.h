@@ -2,6 +2,7 @@
 #define SM64_H
 
 #include "input.h"
+#include "types.h"
 
 // Japanese version addresses.
 #ifdef  SM64_J
@@ -11,6 +12,7 @@
 #define SM64_gPlayer1Controller_addr            0x8032C6A4
 #define SM64_gPlayer2Controller_addr            0x8032C6AC
 #define SM64_gMarioStates_addr                  0x80339E00
+#define SM64_gMarioState_addr                   0x8032c9d8
 #define SM64_sNumVblanks_addr                   0x8032C640
 #define SM64_gSpecialTripleJump_addr            0x8032CE34
 #define SM64_gCurrLevelNum_addr                 0x8032CE98
@@ -55,6 +57,7 @@
 #define SM64_gPlayer1Controller_addr            0x8032D5E4
 #define SM64_gPlayer2Controller_addr            0x8032D5EC
 #define SM64_gMarioStates_addr                  0x8033B170
+#define SM64_gMarioState_addr                   0x8032d93c
 #define SM64_sNumVblanks_addr                   0x8032D580
 #define SM64_gSpecialTripleJump_addr            0x8032DD94
 #define SM64_gCurrLevelNum_addr                 0x8032DDF8
@@ -99,6 +102,7 @@
 #define SM64_gPlayer1Controller_addr            0x8030CD14
 #define SM64_gPlayer2Controller_addr            0x8030CD1C
 #define SM64_gMarioStates_addr                  0x8031D9C0
+#define SM64_gMarioState_addr                   0x8030D068
 #define SM64_sNumVblanks_addr                   0x8030CCB0
 #define SM64_gSpecialTripleJump_addr            0x8030D4C4
 #define SM64_gCurrLevelNum_addr                 0x8030D528
@@ -154,10 +158,16 @@
 
 #endif // SM64_D
 
+// Constants valid for all versions.
+#define ACT_FALL_AFTER_STAR_GRAB                0x00001904
+#define ACT_STAR_DANCE_EXIT                     0x00001302
+#define ACT_STAR_DANCE_NO_EXIT                  0x00001307
+
 // Assignments of variables and functions.
 #define SM64_gDisplayListHead                   (*(Gfx **)         SM64_gDisplayListHead_tail_ptr)
 #define SM64_gPlayer1Controller                 (*(Controller **)  SM64_gPlayer1Controller_addr)
 #define SM64_gPlayer2Controller                 (*(Controller **)  SM64_gPlayer2Controller_addr)
+#define SM64_gMarioState                        (*(struct MarioState **)  SM64_gMarioState_addr)
 #define SM64_sNumVblanks                        (*(uint32_t*)      SM64_sNumVblanks_addr)
 #define SM64_gSpecialTripleJump                 (*(uint8_t*)       SM64_gSpecialTripleJump_addr)
 #define SM64_gCurrLevelNum                      (*(int16_t*)       SM64_gCurrLevelNum_addr)

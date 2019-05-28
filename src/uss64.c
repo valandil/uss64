@@ -1,7 +1,9 @@
 #include <stddef.h>
+#include <inttypes.h>
 #include <n64/thread.h>
 #include <n64/message.h>
 #include <n64/pi.h>
+#include <n64/vr4300.h>
 #include <startup.h>
 #include "gz/src/gz/gz_api.h"
 #include "gz/src/gz/input.h"
@@ -19,6 +21,34 @@ struct uss64 uss64 =
 {
   .ready = 0,
 };
+
+static void update_cpu_counter(void)
+{
+  static uint32_t count = 0;
+  uint32_t new_count = osGetCount();
+  uss64.cpu_counter += new_count - count;
+  count = new_count;
+}
+
+static void print_timer(struct gfx_font* font, int x, int y, struct uss64_timer * timer)
+{
+  uint8_t alpha = menu_get_alpha_i(uss64.menu_main, 1);
+  gfx_mode_replace(GFX_MODE_COLOR, GPACK_RGBA8888(0xC0, 0xC0, 0xC0, alpha));
+
+  if (timer->hours > 0)
+    gfx_printf(font, x, y, "%d:%02d:%02d.%02d",
+               timer->hours, timer->minutes, timer->seconds, timer->hundreths);
+
+  else if (timer->minutes > 0)
+    gfx_printf(font, x, y, "%d:%02d.%02d",
+               timer->minutes, timer->seconds, timer->hundreths);
+
+  else
+    gfx_printf(font, x, y, "%d.%02d",
+               timer->seconds, timer->hundreths);
+
+  gfx_mode_pop(GFX_MODE_COLOR);
+}
 
 HOOK static void interaction_star_hook1(void)
 {
@@ -51,6 +81,8 @@ HOOK static void display_hook(void)
     Gfx ** dl = get_display_list_for_injection();
     gDPSetFillColor((*dl)++, GPACK_RGBA5551(255,0,0,1) << 16 | GPACK_RGBA5551(255,0,0,1));
     gDPFillRectangle((*dl)++, 0, 0, 10, 10);
+
+    // Copy the uss64 DL to SM64's main DL.
     gfx_flush();
   }
 }
@@ -59,6 +91,7 @@ HOOK static void main_hook(void)
 {
   input_update();
   gfx_mode_init();
+  update_cpu_counter();
 
   // If the star select command was previously invoke, initiate a warp to the
   // original level.
@@ -193,12 +226,54 @@ HOOK static void main_hook(void)
   // There are two v-blanks per rendered frame (30 fps).
   uss64.frame_counter += 2;
 
+  // Draw timer.
+  if (!uss64.timer_active)
+    uss64.timer_counter_offset -= uss64.cpu_counter - uss64.timer_counter_prev;
+
+  uss64.timer_counter_prev = uss64.cpu_counter;
+  if (settings->bits.timer)
+  {
+    int64_t count = uss64.cpu_counter + uss64.timer_counter_offset;
+    static struct uss64_timer timer;
+    uss64_count_to_timer(count,&timer);
+    int x = settings->timer_x;
+    int y = settings->timer_y;
+    print_timer(font,x,y,&timer);
+
+    // Grab timer value at star grab.
+    if (SM64_gMarioState->action == 0x00001904 && !uss64.star_grabbed)
+    {
+      uss64.timer_star_grab = timer;
+      uss64.star_grabbed = 1;
+    }
+
+    if (SM64_gMarioState->action == 0x00001302 & !uss64.xcam_triggered)
+    {
+      uss64.timer_xcam = timer;
+      uss64.xcam_triggered = 1;
+    }
+
+    // Print the star grab time if the star was grabbed.
+    if (uss64.star_grabbed)
+    {
+      int x_stargrab = x;
+      int y_stargrab = y - 10;
+      print_timer(font,x_stargrab,y_stargrab,&uss64.timer_star_grab);
+    }
+
+    // Print the xcam time if it was triggered.
+    if (uss64.xcam_triggered)
+    {
+      int x_xcam = x;
+      int y_xcam = y - 20;
+      print_timer(font,x_xcam,y_xcam,&uss64.timer_xcam);
+    }
+  }
   // Set special triple jump.
   if (settings->bits.special_triple_jump)
     SM64_gSpecialTripleJump = 1;
   else
     SM64_gSpecialTripleJump = 0;
-
 }
 
 static void main_return_proc(struct menu_item *item, void *data)
@@ -216,7 +291,13 @@ HOOK static void init(void)
   uss64.menu_active = 0;
   uss64.frame_counter = 0;
   uss64.lag_vi_offset = -(int32_t)SM64_sNumVblanks;
-  uss64.cpu_counter = osGetCount();
+  uss64.cpu_counter = 0;
+  update_cpu_counter();
+  uss64.timer_active = 1;
+  uss64.timer_counter_offset = -uss64.cpu_counter;
+  uss64.timer_counter_prev = uss64.cpu_counter;
+  uss64.star_grabbed = 0;
+  uss64.xcam_triggered = 0;
 
   // Initialize gfx.
   {

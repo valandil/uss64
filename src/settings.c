@@ -33,6 +33,7 @@ void settings_load_default(void)
   d->bits.drop_shadow = 1;
   d->bits.input_display = 1;
   d->bits.lag_counter = 1;
+  d->bits.timer = 1;
   d->bits.non_stop = 0;
   d->bits.special_triple_jump = 0;
   d->menu_x = 16;
@@ -42,6 +43,8 @@ void settings_load_default(void)
   d->input_display_y = GAME_SCREEN_HEIGHT - 12;
   d->lag_counter_x = GAME_SCREEN_WIDTH - 12;
   d->lag_counter_y = GAME_SCREEN_HEIGHT - 12;
+  d->timer_x = GAME_SCREEN_WIDTH - 60;
+  d->timer_y = GAME_SCREEN_HEIGHT - 20;
   d->cheats = 0;
   d->binds[COMMAND_MENU] = input_bind_make(2, BUTTON_R, BUTTON_L);
   d->binds[COMMAND_RETURN] = input_bind_make(2, BUTTON_R, BUTTON_D_LEFT);
@@ -49,6 +52,10 @@ void settings_load_default(void)
   d->binds[COMMAND_RELOAD] = input_bind_make(1, BUTTON_L);
   d->binds[COMMAND_STARSELECT] = input_bind_make(2, BUTTON_A, BUTTON_L);
   d->binds[COMMAND_RESETLAG] = input_bind_make(1, BUTTON_L);
+  d->binds[COMMAND_TIMER] = input_bind_make(0);
+  d->binds[COMMAND_RESETTIMER] = input_bind_make(1, BUTTON_L);
+  d->binds[COMMAND_STARTTIMER] = input_bind_make(0);
+  d->binds[COMMAND_STOPTIMER] = input_bind_make(0);
 }
 
 //! TODO

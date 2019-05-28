@@ -107,6 +107,19 @@ static int input_display_proc(struct menu_item *item,
   return 0;
 }
 
+static int timer_proc(struct menu_item *item,
+                              enum menu_callback_reason reason,
+                              void *data)
+{
+  if (reason == MENU_CALLBACK_SWITCH_ON)
+    settings->bits.timer = 1;
+  else if (reason == MENU_CALLBACK_SWITCH_OFF)
+    settings->bits.timer = 0;
+  else if (reason == MENU_CALLBACK_THINK)
+    menu_checkbox_set(item, settings->bits.timer);
+  return 0;
+}
+
 static int lag_counter_proc(struct menu_item *item,
                             enum menu_callback_reason reason,
                             void *data)
@@ -188,16 +201,22 @@ static void  line_spacing_dec_proc(struct menu_item *item, void *data)
 struct menu *uss64_settings_menu(void)
 {
   static struct menu menu;
+  static struct menu timer;
   static struct menu commands;
 
   // Initialize menus.
   menu_init(&menu,     MENU_NOVALUE, MENU_NOVALUE, MENU_NOVALUE);
+  menu_init(&timer,    MENU_NOVALUE, MENU_NOVALUE, MENU_NOVALUE);
   menu_init(&commands, MENU_NOVALUE, MENU_NOVALUE, MENU_NOVALUE);
 
   // Populate settings menu.
   int x_checkbox = 20;
   int y = 0;
   menu.selector = menu_add_submenu(&menu, 0, y, NULL, "return");
+
+  /* Submenus, to be populated at the tail of this function */
+  menu_add_submenu(&menu, 0, ++y, &timer, "timer");
+  menu_add_submenu(&menu, 0, ++y, &commands, "commands");
 
   /* Appearance controls */
   // Line spacing
@@ -232,15 +251,24 @@ struct menu *uss64_settings_menu(void)
   // Input display
   menu_add_static(&menu, 0, ++y, "input display", 0xC0C0C0);
   menu_add_checkbox(&menu, x_checkbox, y, input_display_proc, NULL);
-  menu_add_positioning(&menu, x_checkbox + 2, y, generic_position_proc, &settings->input_display_x);
+  menu_add_positioning(&menu, x_checkbox + 2, y, generic_position_proc,
+                       &settings->input_display_x);
+
+  // Populate timer menu.
+  y = 0;
+  timer.selector = menu_add_submenu(&timer, 0, 0, NULL, "return");
 
   // Lag counter.
-  menu_add_static(&menu, 0, ++y, "lag counter", 0xC0C0C0);
-  menu_add_checkbox(&menu, x_checkbox, y, lag_counter_proc, NULL);
-  menu_add_positioning(&menu, x_checkbox + 2, y, generic_position_proc, &settings->lag_counter_x);
+  menu_add_static(&timer, 0, ++y, "lag counter", 0xC0C0C0);
+  menu_add_checkbox(&timer, x_checkbox, y, lag_counter_proc, NULL);
+  menu_add_positioning(&timer, x_checkbox + 2, y, generic_position_proc,
+                       &settings->lag_counter_x);
 
-  // Commands
-  menu_add_submenu(&menu, 0, ++y, &commands, "commands");
+  // Timer
+  menu_add_static(&timer, 0, ++y, "timer", 0xC0C0C0);
+  menu_add_checkbox(&timer, x_checkbox, y, timer_proc, NULL);
+  menu_add_positioning(&timer, x_checkbox + 2, y, generic_position_proc,
+                       &settings->timer_x);
 
   // Populate commands menu.
   // We allow for multiple pages of commands.

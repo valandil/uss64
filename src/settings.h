@@ -23,6 +23,10 @@ enum commands
   COMMAND_RELOAD,
   COMMAND_STARSELECT,
   COMMAND_RESETLAG,
+  COMMAND_TIMER,
+  COMMAND_RESETTIMER,
+  COMMAND_STARTTIMER,
+  COMMAND_STOPTIMER,
   COMMAND_MAX,
 };
 
@@ -32,6 +36,7 @@ struct settings_bits
   uint32_t drop_shadow         : 1;
   uint32_t input_display       : 1;
   uint32_t lag_counter         : 1;
+  uint32_t timer               : 1;
   uint32_t non_stop            : 1;
   uint32_t special_triple_jump : 1;
 };
@@ -47,6 +52,8 @@ struct settings_data
   int16_t              input_display_y;
   int16_t              lag_counter_x;
   int16_t              lag_counter_y;
+  int16_t              timer_x;
+  int16_t              timer_y;
   uint16_t             binds[SETTINGS_BIND_MAX];
 };
 

@@ -103,7 +103,7 @@ addrs_to_replace = []
 # -- For each hook, determine the address that the preprocessor outputs, and
 # -- write it in addrs_to_replace.
 for i in range(len(strings_to_replace)):
-  sub_cmd = "printf \"#include \\\"src/sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | {} -E -DSM64_{} -xc - | tail -n 1".format(args.mips64_gcc,args.version)
+  sub_cmd = "printf \"#include \\\"src/sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | {} -E -DSM64_{} -I/opt/n64/mips64/n64-sysroot/usr/include/ -xc - | tail -n 1".format(args.mips64_gcc,args.version)
   addrs_to_replace.append(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))
 
 if (args.verbose ==2):

@@ -11,7 +11,7 @@ Ideas for a future release:
      - [ ] When resetting in castle, does not take into account last exit. Should
            map all warp nodes correctly.
    - [ ] Star Select (toggle between Tiny and Huge THI)
-     - [ ] This doesn't work. Trying to iniate a warp to PSS and then immediatley after
+     - [ ] This doesn't work. Trying to initiate a warp to PSS and then immediately after
        another warp doesn't work. Must include some kind of delay, or figure out a way
        to instantly trigger star select.
    - [ ] Savestates
@@ -33,7 +33,7 @@ Ideas for a future release:
    - [ ] Show timer in castle
    - [ ] Centiseconds (toggle)
    - [ ] Show timer always, star grab, x-cam (toggle).
-   - [ ] Stop timer star grab, x-cam (toggle).
+   - [ ] Stop timer star grab, x-cam (show both).
  - HUD elements
    - [X] Lag counter, reset at level reset/star select/with L.
    - [ ] Lag as lives

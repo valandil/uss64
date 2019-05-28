@@ -14,6 +14,10 @@ struct command_info command_info[COMMAND_MAX] =
   {"reload level",      command_reload,     CMDACT_PRESS_ONCE},
   {"star select",       command_starselect, CMDACT_PRESS_ONCE},
   {"reset lag counter", command_resetlag,   CMDACT_PRESS_ONCE},
+  {"start/stop timer",  command_timer,      CMDACT_PRESS_ONCE},
+  {"reset timer",       command_resettimer, CMDACT_PRESS_ONCE},
+  {"start timer",       command_starttimer, CMDACT_PRESS_ONCE},
+  {"stop timer",        command_stoptimer,  CMDACT_PRESS_ONCE},
 };
 
 void uss64_apply_settings()
@@ -86,4 +90,29 @@ void command_resetlag(void)
 {
   uss64.frame_counter = 0;
   uss64.lag_vi_offset = -(int32_t)SM64_sNumVblanks;
+}
+
+void command_timer(void)
+{
+  uss64.timer_active = !uss64.timer_active;
+}
+
+void command_resettimer(void)
+{
+  uss64.timer_counter_offset = -uss64.cpu_counter;
+  uss64.timer_counter_prev = uss64.cpu_counter;
+  uss64.star_grabbed = 0;
+  uss64.xcam_triggered = 0;
+}
+
+void command_starttimer(void)
+{
+  if (!uss64.timer_active)
+    command_timer();
+}
+
+void command_stoptimer(void)
+{
+  if (uss64.timer_active)
+    command_timer();
 }
