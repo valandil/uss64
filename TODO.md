@@ -1,17 +1,76 @@
+Ideas for a future release:
+ - [ ] Add support for SM64 Europe.
+ - [ ] Add support for SM64 iQue.
+ - [ ] Add support for SM64 DD.
+ - [ ] Include a built-in patcher.
+ - Practice
+   - [ ] Infinite lives
+   - [ ] Level reset (with camerafix)
+     - [X] Reset level
+     - [ ] Coins don't respawn, and I suspect enemies do not return to their original positions.
+     - [ ] When resetting in castle, does not take into account last exit. Should
+           map all warp nodes correctly.
+   - [ ] Star Select (toggle between Tiny and Huge THI)
+     - [ ] This doesn't work. Trying to initiate a warp to PSS and then immediately after
+       another warp doesn't work. Must include some kind of delay, or figure out a way
+       to instantly trigger star select.
+   - [ ] Savestates
+     - [ ] Double savestates (asm)
+     - [ ] Something similar to memfiles in gz, with SD card writes
+   - [X] Level Select (similar to warps in gz)
+     - [ ] Not super stable. And some warps won't work depending on the current level. Should work       out warp nodes.
+   - [ ] Pre-made practice files (customizable)
+     - [ ] 120 Star
+     - [ ] Up RTA 74 star
+     - [ ] Up RTA 39 star
+     - [ ] Up RTA 38 star
+     - [ ] Tippy RTA 103 Star
+     - [ ] Tippy RTA 58
+ - Timer
+   - [ ] Customize/remove TIME text.
+   - [ ] Toggle reset timer at level reset/star select/with L.
+   - [ ] Slide fix
+   - [ ] Show timer in castle
+   - [ ] Centiseconds (toggle)
+   - [ ] Show timer always, star grab, x-cam (toggle).
+   - [ ] Stop timer star grab, x-cam (show both).
+ - HUD elements
+   - [X] Lag counter, reset at level reset/star select/with L.
+   - [ ] Lag as lives
+   - [ ] Speed display
+   - [ ] Speed as stars
+   - [ ] Number of inputs per second
+ - Cosmetic
+   - [ ] No music (toggle)
+   - [ ] All Stars coloured (toggle, select color).
+   - [ ] Custom dust colour
+ - Misc.
+   - [ ] Spawn MIPS in basement (toggle)
+   - [ ] Spawn sub in DDD (toggle).
+   - [ ] Spawn unpressed cap switches (toggle).
+   - [ ] Spawn toad stars (toggle).
+   - [ ] Spawn fat penguin (toggle).
+   - [ ] TTC clock speed.
+   - [ ] WDW water level.
+   - [X] Non-stop (toggle).
+   - [X] Special triple jump toggle.
+   - [ ] Save best times (with and without 100c star) to SD card ~~(or EEPROM)~~.
+   - [ ] Detect if there is extra lag? (Not really possible unless you send the
+         same DLs (+ uss64) and check the difference in lag).
+
 Development:
  - [X] Check the textures that SM64 understands (fipps is ia4, for instance).
- - [ ] Add support for SM64 Europe.
- - [ ] Write a sane build pipeline (Makefile).
-   - [ ] Give $(BINDIR), $(ASMDIR) and $(PATCHDIR) as an argument to GenerateHooks in Makefile.
+ - [X] Write a sane build pipeline (Makefile).
+   - [X] Give $(BINDIR), $(ASMDIR) and $(PATCHDIR) as an argument to GenerateHooks in Makefile.
    - [X] Create a loop for all supported versions.
    - [X] Simplify directory structure of Makefile output, specifically the patch part.
- - [ ] Generate patches in different formats (xdelta, bps, ...).
+ - [ ] Generate patches in different formats (~~xdelta~~, bps, ...).
  - [X] Capture input
-   - First try through Mario's object, but not sure that's active all the time.
+   - ~~First try through Mario's object, but not sure that's active all the time.~~
    - Otherwise, capture the raw input data from the console.
- - [ ] Spawn a simple menu. Just a return option.
+ - [X] Spawn a simple menu. Just a return option.
  - [X] Code input display.
- - [ ] Find more intelligent way to hook. Mario's behaviour is not run at every frame. 
+ - [X] Find more intelligent way to hook. Mario's behaviour is not run at every frame.
  - Finish Fast3D support in `gbi.h`:
    - [X] `G_MW_FORCEMTX` and related macros.
    - [X] Fix `g{,s}SPMatrix`.
@@ -41,49 +100,3 @@ Development:
        There isn't much in the official docs. Maybe try to inject a known DL with
        deliberately wrong data and see what happens. Choose a second level DL
        to mess with a single layer (or try to).
-
-
-Ideas for a future release:
- - Practice
-   - [ ] Infinite lives
-   - [ ] Level reset (with camerafix)
-   - [ ] Star Select (toggle between Tiny and Huge THI)
-   - [ ] Savestates
-     - [ ] Double savestates (asm)
-     - [ ] Something similar to memfiles in gz, with SD card writes
-   - [ ] Level Select (similar to warps in gz)
-   - [ ] Pre-made practice files (customizable)
-     - [ ] 120 Star
-     - [ ] Up RTA 74 star
-     - [ ] Up RTA 39 star
-     - [ ] Up RTA 38 star
-     - [ ] Tippy RTA 103 Star
-     - [ ] Tippy RTA 58
- - Timer
-   - [ ] Customize/remove TIME text.
-   - [ ] Toggle reset timer at level reset/star select/with L.
-   - [ ] Slide fix
-   - [ ] Show timer in castle
-   - [ ] Centiseconds (toggle)
-   - [ ] Show timer always, star grab, x-cam (toggle).
-   - [ ] Stop timer star grab, x-cam (toggle).
- - HUD elements
-   - [ ] Lag counter, reset at level reset/star select/with L.
-   - [ ] Lag as lives
-   - [ ] Speed display
-   - [ ] Speed as stars
- - Cosmetic
-   - [ ] No music (toggle)
-   - [ ] All Stars coloured (toggle, select color).
-   - [ ] Custom dust colour
- - Misc.
-   - [ ] Spawn MIPS in basement (toggle)
-   - [ ] Spawn sub in DDD (toggle).
-   - [ ] Spawn unpressed cap switches (toggle).
-   - [ ] Spawn toad stars (toggle).
-   - [ ] Spawn fat penguin (toggle).
-   - [ ] TTC clock speed.
-   - [ ] WDW water level.
-   - [ ] Non-stop (toggle).
-   - [ ] Save best times (with and without 100c star) to SD card (or EEPROM).
-   - [ ] Detect if there is extra lag?

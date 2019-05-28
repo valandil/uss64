@@ -53,8 +53,8 @@ if (args.verbose == 1):
   print(args.version)
 
 # -- Names of the functions which we want to hook into SM64.
-hooks     = ["_start",      "display_hook",      "gfx_flush",       "uss64_ready", "gfx_disp",       "gfx_disp_w"]
-HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_gfx_flush", "USS64_Ready", "USS64_gfx_disp", "USS64_gfx_disp_w"]
+hooks     = ["_start",      "display_hook",      "interaction_star_hook1",       "interaction_star_hook2",       "gfx_flush",       "uss64",       "gfx_disp",       "gfx_disp_w"]
+HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_interaction_star_hook1", "USS64_interaction_star_hook2", "USS64_gfx_flush", "USS64_Ready", "USS64_gfx_disp", "USS64_gfx_disp_w"]
 addrs = []
 
 # -- Use nm to output the symbol table of uss64.
@@ -81,6 +81,8 @@ for i in range(len(hooks)):
       addrs.append("0x"+match.group(0))
       break
 
+if (args.verbose == 2):
+  print(dict(zip(hooks,addrs)))
 # -- Determine the SM64 addresses that we hook on by
 # -- preprocessing the sm64.h header by specifing the proper
 # -- macro definition for the SM64 version we are currently using.
@@ -92,15 +94,20 @@ strings_to_replace = ["SM64_RAMEntryPoint",          \
                       "SM64_CleanUpDisplayListHook", \
                       "SM64_DMACopy",                \
                       "SM64_SoundInitHook",          \
-                      "osInvalDCache_addr"
+                      "osInvalDCache_addr",          \
+                      "SM64_interaction_star_hook1", \
+                      "SM64_interaction_star_hook2"  \
                       ]
 addrs_to_replace = []
 
 # -- For each hook, determine the address that the preprocessor outputs, and
 # -- write it in addrs_to_replace.
 for i in range(len(strings_to_replace)):
-  sub_cmd = "printf \"#include \\\"src/sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | {} -E -DSM64_{} -xc - | tail -n 1".format(args.mips64_gcc,args.version)
+  sub_cmd = "printf \"#include \\\"src/sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | {} -E -DSM64_{} -I/opt/n64/mips64/n64-sysroot/usr/include/ -xc - | tail -n 1".format(args.mips64_gcc,args.version)
   addrs_to_replace.append(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))
+
+if (args.verbose ==2):
+  print(dict(zip(strings_to_replace,addrs_to_replace)))
 
 # -- Version strings, and file paths.
 FileNames = ["USS64_BIN",    \
@@ -114,7 +121,7 @@ sub_cmd = "readlink -f {}".format(args.elf)
 bin_name = os.path.splitext(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))[0]+".bin"
 
 # -- Determine if we're on mingw python.
-if (sys.platform == "win32"):
+if (sys.platform == "msys"):
   bin_name = r"c:\\msys64\\"+bin_name
 
 # -- Final names of the output files.

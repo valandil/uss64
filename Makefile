@@ -24,13 +24,16 @@ XDELTA            := xdelta3
 # Compiler/linker flags (verify that -mabi=32 is necessary).
 N64_SYSROOT      ?= /opt/n64/mips64/n64-sysroot/usr/
 CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
-                    -DF3D_GBI                                                  \
+                    -mno-check-zero-division -mdivide-breaks                   \
+                    $(GRUCODE)                                                 \
                     -DZ64_VERSION=Z64_OOT10                                    \
-                    -I ${N64_SYSROOT}/include                                  \
+                    -DSETTINGS_HEADER=../../../src/settings.h                  \
+                    -I ${N64_SYSROOT}/include/                                 \
+                    -I $(CURDIR)                                               \
                     -I $(CURDIR)                                               \
                     $(SM64_VERSION_FLAG)
 CXXFLAGS          = -std=gnu++14 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32\
-                    -DF3D_GBI
+                    $(GRUCODE)
 LDSCRIPT          = $(N64_SYSROOT)/lib/gl-n64.ld
 LDFLAGS           = -T $(LDSCRIPT) -nostartfiles -specs=nosys.specs            \
                     -Wl,--gc-sections                                          \
@@ -48,18 +51,24 @@ DEBUG_SCRIPTS_OUT = debug_scripts_out
 EMU_SCRIPTDIR     = c/Users/Joey/Documents/VGs/Emulation/Project64d/Scripts
 
 # Source file lists.
-USS64FILES        = $(SRCDIR)/uss64.c $(SRCDIR)/sm64.c
+USS64FILES        = $(SRCDIR)/uss64_commands.c $(SRCDIR)/uss64.c               \
+                    $(SRCDIR)/sm64.c $(SRCDIR)/gz_api.c                        \
+                    $(SRCDIR)/settings.c $(SRCDIR)/uss64_settings.c            \
+                    $(SRCDIR)/uss64_warps.c $(SRCDIR)/uss64_timer.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
 				            $(N64_SYSROOT)/include/vector/vector.c                     \
-				            $(N64_SYSROOT)/include/startup.c
+				            $(N64_SYSROOT)/include/startup.c                           \
+				            $(N64_SYSROOT)/include/list/list.c
 STDHEADERS       := $(patsubst %.c, %.h, $(STDFILES))
 STDHEADERS       += $(N64_SYSROOT)/include/n64.h
 GZFILES           = gz/src/gz/gfx.c                                            \
+                    gz/src/gz/input.c                                          \
                     gz/src/gz/resource.c                                       \
                     gz/src/gz/gu.c                                             \
-                    gz/src/gz/zu.c
+                    gz/src/gz/zu.c                                             \
+                    gz/src/gz/menu*.c
 GZHEADERS         = $(wildcard gz/res/gz/*.h)
-RESFILES          = gz/res/gz/fipps.png gz/res/gz/button_icons.png
+RESFILES          = gz/res/gz/*.png
 HEADERS           = $(SRCDIR)/sm64.h
 
 # Source files variables.
@@ -71,7 +80,7 @@ RESSRC           := $(foreach  s, $(RESFILES),  $(wildcard $(s)))
 OBJECTS           = $(USS64_OBJECTS) $(STD_OBJECTS) $(GZ_OBJECTS) $(RES_OBJECTS)
 
 # Versions of SM64 to inject into.
-USS64_VERSIONS    = SM64_U SM64_J SM64_S #SM64_Q SM64_E
+USS64_VERSIONS    = SM64_U SM64_J SM64_S #SM64_Q SM64_E SM64_D
 
 # Default targets.
 USS64             = $(foreach v,$(USS64_VERSIONS),uss64-$(v))
@@ -152,21 +161,41 @@ $$(USS64_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(USS64_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
+$$(USS64_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
+
+ifneq ($(3),SM64_S)
+$$(USS64_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
+endif
 
 $$(STD_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(STD_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
+$$(STD_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
+
+ifneq ($(3),SM64_S)
+$$(STD_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
+endif
 
 $$(GZ_OBJECTS-$(1))   : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(GZ_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
+$$(GZ_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
+
+ifneq ($(3),SM64_S)
+$$(GZ_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
+endif
 
 $$(RES_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o  : % | $$$$(dir $$$$@)
-	$$(GRC) -d $$(RESDESC) $$^ -o $$@
+	$$(GRC) $$< -d $$(RESDESC) -o $$@
 
 $$(RES_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
+$$(RES_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
+
+ifneq ($(3),SM64_S)
+$$(RES_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
+endif
 
 GenerateHooks-$(1)    : $$(ELF-$(1)) | $$(DEBUG_SCRIPTS_OUT)/ $$(PATCHDIR)/
 	$$(PYTHON) $$(GENERATEHOOKS) -vv $$(ELF-$(1)) $$(VERSION-$(1)) --mips64-nm=$$(CROSS)nm --mips64-gcc=$$(CROSS)gcc
