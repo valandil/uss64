@@ -2,20 +2,15 @@
 # Author:       Joey Dumont                   <joey.dumont@gmail.com>         #
 # Date:         2018-05-04                                                    #
 # Description:  Prepare the armips file necessary to inject uss64 into the    #
-#               specified version of the ROM.                                 #                                              #
+#               specified version of the ROM.                                 #
 # --------------------------------------------------------------------------- #
-
-"""
-TO DO:
- - Add the sm64.*.yml config files to the repo, and add the relevant uss64
-   ranges and labels for easy disassembly.
-"""
-import argparse
-import yaml
 
 # -- OS stuff.
 import os
 import sys
+
+# -- Argument parsing
+import argparse
 
 # -- Run shell commands.
 import subprocess
@@ -25,7 +20,7 @@ import shlex
 import re
 
 # ------------------------------ MAIN FUNCTION ------------------------------ #
-# -- Change directory to where the scrit is located.
+# -- Change directory to where the script is located.
 os.chdir(sys.path[0])
 
 # -- Parse arguments
@@ -164,13 +159,3 @@ for filename in os.listdir("debug_scripts"):
         filename_line = re.sub("{{{}}}".format(key), value, filename_line)
       filename_o.write(filename_line)
     filename_o.write("\n")
-
-# # -- Create the n64split-compatible YAML file and populate it with the addresses.
-# addr_file = open("hooks.yaml", "w", newline=None)
-# data = """
-#   hooks:
-#     -[_start, 0x80240000]
-# """
-# yaml.dump(data, addr_file, default_flow_style=None)
-# print(yaml.dump(data))
-# print(data)

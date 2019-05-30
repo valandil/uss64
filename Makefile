@@ -16,6 +16,7 @@ LD                := $(CROSS)g++
 OBJCOPY           := $(CROSS)objcopy
 NM                := $(CROSS)nm
 PYTHON            := python
+PARSEHOOKS        := ParseHooks.py
 GENERATEHOOKS     := GenerateHooks.py
 GRC               := AS=$(CROSS)as $(TOOLS_PREFIX)grc
 N64CHECKSUM       := n64cksum
@@ -25,7 +26,7 @@ XDELTA            := xdelta3
 N64_SYSROOT      ?= /opt/n64/mips64/n64-sysroot/usr/
 CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -mno-check-zero-division -mdivide-breaks                   \
-                    $(GRUCODE)                                                 \
+                    $(GBI_VERSION)                                                 \
                     -DZ64_VERSION=Z64_OOT10                                    \
                     -DSETTINGS_HEADER=../../../src/settings.h                  \
                     -I ${N64_SYSROOT}/include/                                 \
@@ -33,7 +34,7 @@ CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -I $(CURDIR)                                               \
                     $(SM64_VERSION_FLAG)
 CXXFLAGS          = -std=gnu++14 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32\
-                    $(GRUCODE)
+                    $(GBI_VERSION)
 LDSCRIPT          = $(N64_SYSROOT)/lib/gl-n64.ld
 LDFLAGS           = -T $(LDSCRIPT) -nostartfiles -specs=nosys.specs            \
                     -Wl,--gc-sections                                          \
@@ -103,6 +104,9 @@ list:
 
 .PHONY: clean list
 
+src/sm64.h: $(PARSEHOOKS)
+	$(PYTHON) $(PARSEHOOKS)
+
 scripts: GenerateHooks
 	cp $(DEBUG_SCRIPTS_OUT)/uss64* $(EMU_SCRIPTDIR)
 
@@ -157,44 +161,44 @@ $$(BIN-$(1))          : $$(ELF-$(1)) | $$$$(dir $$$$@)
 $$(ELF-$(1))          : $$(OBJ-$(1)) | $$$$(dir $$$$@)
 	$$(LD) $$(LDFLAGS) $$^ -o $$@
 
-$$(USS64_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
+$$(USS64_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % src/sm64.h | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(USS64_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(USS64_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
+$$(USS64_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
 ifneq ($(3),SM64_S)
-$$(USS64_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
+$$(USS64_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 endif
 
 $$(STD_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(STD_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(STD_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
+$$(STD_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
 ifneq ($(3),SM64_S)
-$$(STD_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
+$$(STD_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 endif
 
 $$(GZ_OBJECTS-$(1))   : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(GZ_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(GZ_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
+$$(GZ_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
 ifneq ($(3),SM64_S)
-$$(GZ_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
+$$(GZ_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 endif
 
 $$(RES_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o  : % | $$$$(dir $$$$@)
 	$$(GRC) $$< -d $$(RESDESC) -o $$@
 
 $$(RES_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(RES_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
+$$(RES_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
 ifneq ($(3),SM64_S)
-$$(RES_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
+$$(RES_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 endif
 
 GenerateHooks-$(1)    : $$(ELF-$(1)) | $$(DEBUG_SCRIPTS_OUT)/ $$(PATCHDIR)/
