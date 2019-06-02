@@ -1,0 +1,10 @@
+# Nice name: uss64 function or variable
+
+USS64_Start: _start
+USS64_DisplayHook: display_hook
+USS64_Interaction_Star_Hook_1: interaction_star_hook1
+USS64_Interaction_Star_Hook_2: interaction_star_hook2
+USS64_gfx_flush: gfx_flush
+USS64_Ready: uss64
+USS64_gfx_disp: gfx_disp
+USS64_gfx_disp_w: gfx_disp_w
