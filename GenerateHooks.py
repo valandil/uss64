@@ -41,7 +41,7 @@ parser.add_argument("elf",
                     help="ELF file to analyze.")
 parser.add_argument("version",
                     type=str,
-                    help="Version of the game to hook into (J or U).")
+                    help="Version of the game to hook intos.")
 args = parser.parse_args()
 
 if (args.verbose == 1):

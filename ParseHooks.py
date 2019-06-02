@@ -12,6 +12,61 @@ import sys
 import yaml
 import itertools
 
+class HooksParser(object):
+  """
+  This class parses the sm64 and uss64 hook files.
+  They generate the sm64.h header, the sm64.c unit, and perform
+  string substitution in the armips input files.
+  """
+  def __init__(self, sm64_hooks, uss64_hooks):
+    """
+    Opens the hook files and determine some of their properties.
+    """
+    self.sm64_hooks_f = sm64_hooks
+    self.uss64_hooks_f = uss64_hooks
+
+    with open(self.sm64_hooks_f, 'r') as sm64_hooks_h:
+      self.sm64_hooks = yaml.load(sm64_hooks_h.read())
+
+    with open(self.uss64_hooks_f, 'r') as uss64_hooks_h:
+      self.uss64_hooks = yaml.load(uss64_hooks_h.read())
+
+    # -- Determine the maximum lengths of some sets of strings
+    # -- in order to be able to pretty print.
+
+    # -- Longest name of variables, functions and hooks.
+    string_len = []
+    for element in sm64_hooks:
+      string_len.append(max(map(len,sm64_hooks[element])))
+
+    self.max_string = max(string_len) + len("_addr")
+
+    # -- Longest variable type.
+    type_len_var = []
+    for k, v in sm64_hooks['Variables'].items():
+      type_len_var.append(len(v['VariableType']))
+
+    self.varLen = max(type_len_var)
+
+    # -- Longest return type.
+    type_len_func = []
+    for k, v in sm64_hooks['Functions'].items():
+      type_len_func.append(len(v['ReturnType']))
+
+    self.typeLen = max(type_len_func)
+
+    # -- Longest function name.
+    self.functionNameLen = max(map(len,sm64_hooks['Functions']))
+
+    # -- Length of argument list + formatting: (arg1, arg2, arg3)
+    arg_list_func = []
+    for k, v in sm64_hooks['Functions'].items():
+      arg_list_func.append(len('('+
+                               ', '.join(v['Arguments'])+')' if v['Arguments'] != None else "()"))
+
+    self.argListLen = max(arg_list_func)
+
+
 # ---------------------------- Parsing Functions ---------------------------- #
 
 def parseInputFiles(hooks):
@@ -127,34 +182,6 @@ os.chdir(sys.path[0])
 # -- Open the hooks file.
 with open('hooks.yml', 'r') as hooks_file:
   hooks_yaml = yaml.load(hooks_file.read())
-
-# To write the sm64.h in a nice way, we need to determine the longest key in
-# the second layer of the yaml file.
-string_len = []
-for element in hooks_yaml:
-  string_len.append(max(map(len,hooks_yaml[element])))
-
-max_string = max(string_len) + len("_addr")
-
-# -- Longest variable type.
-type_len_var = []
-for k, v in hooks_yaml['Variables'].items():
-  type_len_var.append(len(v['VariableType']))
-varLen = max(type_len_var)
-
-# -- Longest return type.
-type_len_func = []
-for k, v in hooks_yaml['Functions'].items():
-  type_len_func.append(len(v['ReturnType']))
-typeLen = max(type_len_func)
-functionNameLen = max(map(len,hooks_yaml['Functions']))
-
-# -- Length of argument list.
-arg_list_func = []
-for k, v in hooks_yaml['Functions'].items():
-  arg_list_func.append(len('('+', '.join(v['Arguments'])+')' if v['Arguments'] != None else "()"))
-
-argListLen = max(arg_list_func)
 
 # -- We print the variable addresses for each version.
 sm64_h = """#ifndef SM64_H
