@@ -22,13 +22,13 @@ class HooksParser(object):
     """
     Opens the hook files and determine some of their properties.
     """
-    self.sm64_hooks_f = sm64_hooks
-    self.uss64_hooks_f = uss64_hooks
+    sm64_hooks_f = sm64_hooks
+    uss64_hooks_f = uss64_hooks
 
-    with open(self.sm64_hooks_f, 'r') as sm64_hooks_h:
+    with open(sm64_hooks_f, 'r') as sm64_hooks_h:
       self.sm64_hooks = yaml.load(sm64_hooks_h.read())
 
-    with open(self.uss64_hooks_f, 'r') as uss64_hooks_h:
+    with open(uss64_hooks_f, 'r') as uss64_hooks_h:
       self.uss64_hooks = yaml.load(uss64_hooks_h.read())
 
     # -- Determine the maximum lengths of some sets of strings
@@ -66,33 +66,40 @@ class HooksParser(object):
 
     self.argListLen = max(arg_list_func)
 
+  def parseInputFiles(self):
+    """
+    Parses the hooks file to determine the #include directives to add to the
+    SM64 header file.
+    """
+    inputFiles = ""
+    for element in sm64_hooks['InputFiles']['System']:
+      inputFiles += "#include <{}>".format(element)
+
+    if sm64_hooks['InputFiles']['System'] != None:
+      inputFiles += "\n"
+
+    for element in sm64_hooks['InputFiles']['Local']:
+      inputFiles += "#include \"{}\"".format(element)
+
+    if sm64_hooks['InputFiles']['Local'] != None:
+      inputFiles += "\n"
+
+    return inputFiles
+
+  def parseVariableDefines(self,version):
+    varDefines = ""
+
+    if v['Addresses'][version] != None:
+      for k, v in sm64_hooks['Variables'].items():
+        varDefines += "#define {:<{}s} 0x{:08X}\n".format(k+"_addr",
+          self.max_string,
+          v['Addresses'][version])
+
+      varDefines += "\n"
+
+    return varDefines
 
 # ---------------------------- Parsing Functions ---------------------------- #
-
-def parseInputFiles(hooks):
-  inputFiles = ""
-
-  for element in hooks['InputFiles']:
-    inputFiles += "#include \"{}\"\n".format(element)
-
-  inputFiles += "\n"
-
-  return inputFiles
-
-def parseVariableDefines(hooks,version):
-  """
-  Parses the hooks yaml file for the addresses of variables.
-  """
-  varDefines = ""
-
-  for k, v in hooks['Variables'].items():
-    if (v['Addresses'][version] != None):
-      varDefines += "#define {:<{}s} 0x{:08X}\n".format(k+"_addr", max_string,
-                                                        v['Addresses'][version])
-
-  varDefines += "\n"
-
-  return varDefines
 
 def parseFunctionDefines(hooks, version):
   """

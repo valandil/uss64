@@ -7,6 +7,8 @@ Versions:
   - D   # 64DD
 
 InputFiles:
+  System:
+  Local:
   - "input.h"
   - "types.h"
 
