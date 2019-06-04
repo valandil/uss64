@@ -60,3 +60,5 @@ dkms.conf
 # repo related ignores
 debug_scripts_out/
 patch/
+
+__pycache__
