@@ -57,10 +57,9 @@ if (args.verbose == 1):
 
 hooksParser = HooksParser.HooksParser(args.sm64_hooks,args.uss64_hooks)
 
-# -- Names of the functions which we want to hook into SM64.
-hooks     = ["_start",      "display_hook",      "interaction_star_hook1",       "interaction_star_hook2",       "gfx_flush",       "uss64",       "gfx_disp",       "gfx_disp_w"]
-HookNames = ["USS64_Start", "USS64_DisplayAddr", "USS64_interaction_star_hook1", "USS64_interaction_star_hook2", "USS64_gfx_flush", "USS64_Ready", "USS64_gfx_disp", "USS64_gfx_disp_w"]
-addrs = []
+# -- Parse the addresses of the hooks.
+uss64_hooks = hooksParser.getUSS64Hooks()
+uss64_addrs = copy.deepcopy(uss64_hooks)
 
 # -- Use nm to output the symbol table of uss64.
 nm_cmd = "{} {}".format(args.mips64_nm,args.elf)
