@@ -19,26 +19,32 @@ import shlex
 # -- Regular expressions.
 import re
 
+import copy
+import HooksParser
+
 # ------------------------------ MAIN FUNCTION ------------------------------ #
 # -- Change directory to where the script is located.
 os.chdir(sys.path[0])
 
+# ----------------------------- Argument Parsing ---------------------------- #
 # -- Parse arguments
 parser = argparse.ArgumentParser()
+parser.add_argument("--verbose", "-v",
+                    action="count",
+                    help="Increase the verbosity of the script.")
 parser.add_argument("--mips64-nm",
                     type=str,
                     default="mips64-nm",
                     help="Path to mips64-nm.")
-parser.add_argument("--mips64-gcc",
-                    type=str,
-                    default="mips64-gcc",
-                    help="Path to mips64-gcc.")
-parser.add_argument("--verbose", "-v",
-                    action="count",
-                    help="Increase the verbosity of the script.")
-parser.add_argument("elf",
+parser.add_argument("--elf",
                     type=str,
                     help="ELF file to analyze.")
+parser.add_argument("--sm64-hooks",
+                    type=str,
+                    help="Path to file containing the addresses of hooks, functions and variables in SM64.")
+parser.add_argument("--uss64-hooks",
+                    type=str,
+                    help="Path to file containing the names of the uss64 functions and variables for which we need the address.")
 parser.add_argument("version",
                     type=str,
                     help="Version of the game to hook intos.")
@@ -46,6 +52,10 @@ args = parser.parse_args()
 
 if (args.verbose == 1):
   print(args.version)
+
+# ---------------------------- Parse Hooks Files ---------------------------- #
+
+hooksParser = HooksParser.HooksParser(args.sm64_hooks,args.uss64_hooks)
 
 # -- Names of the functions which we want to hook into SM64.
 hooks     = ["_start",      "display_hook",      "interaction_star_hook1",       "interaction_star_hook2",       "gfx_flush",       "uss64",       "gfx_disp",       "gfx_disp_w"]

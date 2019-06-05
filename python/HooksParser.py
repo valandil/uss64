@@ -62,6 +62,9 @@ class HooksParser(object):
 
     self.argListLen = max(arg_list_func)
 
+  def getUSS64Hooks(self):
+    return self.uss64_hooks
+
   def parseInputFiles(self):
     """
     Parses the hooks file to determine the #include directives to add to the
@@ -70,13 +73,13 @@ class HooksParser(object):
     inputFiles = ""
     if self.sm64_hooks['InputFiles']['System'] != None:
       for element in self.sm64_hooks['InputFiles']['System']:
-        inputFiles += "#include <{}>".format(element)
+        inputFiles += "#include <{}>\n".format(element)
 
       inputFiles += "\n"
 
     if self.sm64_hooks['InputFiles']['Local'] != None:
       for element in self.sm64_hooks['InputFiles']['Local']:
-        inputFiles += "#include \"{}\"".format(element)
+        inputFiles += "#include \"{}\"\n".format(element)
 
       inputFiles += "\n"
 
@@ -208,10 +211,7 @@ class HooksParser(object):
     """
     Composes the functions above to create the SM64 header file.
     """
-    sm64_h = """#ifndef SM64_H
-    #define SM64_H
-
-    """
+    sm64_h = "#ifndef SM64_H\n#define SM64_H\n\n"
 
     sm64_h += self.parseInputFiles()
 
@@ -240,3 +240,10 @@ class HooksParser(object):
     sm64_h += "#endif // SM64_H\n"
 
     return sm64_h
+
+  def generateSM64CFile(self):
+    sm64_c = "#include \"sm64.h\"\n\n"
+
+    sm64_c += self.parseFunctionDefinitions()
+
+    return sm64_c

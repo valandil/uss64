@@ -22,5 +22,10 @@ os.chdir(sys.path[0])
 hooksParser = HooksParser.HooksParser('../sm64_hooks.yml', '../uss64_hooks.yml')
 
 sm64_h = hooksParser.generateSM64Header()
+sm64_c = hooksParser.generateSM64CFile()
 
-print(sm64_h)
+with open("../src/sm64.h", 'w') as sm64_h_out:
+    sm64_h_out.write(sm64_h)
+
+with open("../src/sm64.c", 'w') as sm64_c_out:
+    sm64_c_out.write(sm64_c)
