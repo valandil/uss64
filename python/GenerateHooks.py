@@ -45,9 +45,9 @@ parser.add_argument("--sm64-hooks",
 parser.add_argument("--uss64-hooks",
                     type=str,
                     help="Path to file containing the names of the uss64 functions and variables for which we need the address.")
-parser.add_argument("version",
+parser.add_argument("--version",
                     type=str,
-                    help="Version of the game to hook intos.")
+                    help="Version of the game to hook into.")
 args = parser.parse_args()
 
 if (args.verbose == 1):
@@ -72,46 +72,28 @@ result = result.splitlines()
 # -- For each element in hooks, isolate its 32-bit address, i.e. the
 # -- one that stars with 8. Some toolchains will pad 32-bit addresses
 # -- with 8 F's before the actual address, although I don't know why.
-for i in range(len(hooks)):
+for k in uss64_addrs.keys():
 
   # Compile the regex that does this.
-  regex = re.compile(r"8[0-9a-fA-F]{7}(?=.* "+"{})".format(hooks[i]))
+  regex = re.compile(r"8[0-9a-fA-F]{7}(?=.* "+"{})".format(uss64_addrs[k]))
 
   # Search the output of nm for our hook. Append the result
   # to addrs in the format 0xyyyyyyyy.
   for j in range(len(result)):
     match = regex.search(result[j])
     if match:
-      addrs.append("0x"+match.group(0))
+      uss64_addrs[k] = "0x"+match.group(0)
       break
 
-if (args.verbose == 2):
-  print(dict(zip(hooks,addrs)))
-# -- Determine the SM64 addresses that we hook on by
-# -- preprocessing the sm64.h header by specifing the proper
-# -- macro definition for the SM64 version we are currently using.
-strings_to_replace = ["SM64_RAMEntryPoint",          \
-                      "SM64_DMAHookCode",            \
-                      "SM64_DMAHookJump",            \
-                      "SM64_ROMPaddingStart",        \
-                      "SM64_ROMMainHook",            \
-                      "SM64_CleanUpDisplayListHook", \
-                      "SM64_DMACopy",                \
-                      "SM64_SoundInitHook",          \
-                      "osInvalDCache_addr",          \
-                      "SM64_interaction_star_hook1", \
-                      "SM64_interaction_star_hook2"  \
-                      ]
-addrs_to_replace = []
+if (args.verbose > 1):
+  print(uss64_addrs)
 
-# -- For each hook, determine the address that the preprocessor outputs, and
-# -- write it in addrs_to_replace.
-for i in range(len(strings_to_replace)):
-  sub_cmd = "printf \"#include \\\"src/sm64.h\\\"\\n{}\"".format(strings_to_replace[i])+" | {} -E -DSM64_{} -I/opt/n64/mips64/n64-sysroot/usr/include/ -xc - | tail -n 1".format(args.mips64_gcc,args.version)
-  addrs_to_replace.append(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))
+# -- Generate the list of strings that we parse for and replace with
+# -- addresses in the armips input files.
+sm64_hooks = hooksParser.getSM64Hooks()
 
-if (args.verbose ==2):
-  print(dict(zip(strings_to_replace,addrs_to_replace)))
+HooksDict = {**hooksParser.getAllAddresses(args.version),
+             **uss64_addrs}
 
 # -- Version strings, and file paths.
 FileNames = ["USS64_BIN",    \
@@ -136,20 +118,22 @@ FilesToReplace += ["SM64_{}".format(args.version), \
                   "SM64_{}".format(args.version), \
                  ]
 
-# -- Concatenate the uss64 addresses with the SM64 addresses and zip them
-# -- up in a dict for easy access.
-names = HookNames+strings_to_replace+FileNames
-addrs = addrs+addrs_to_replace+FilesToReplace
-HooksDict = dict(zip(names,addrs))
+names = FileNames
+addrs = FilesToReplace
+FileNameDict = dict(zip(names,addrs))
+
+# -- Bring everything together.
+for k, v in FileNameDict.items():
+  HooksDict[k] = v
 
 if (args.verbose == 2):
   print(HooksDict)
 
 # -- Populate the armips script with the proper addresses.
-with open("asm/hook.asm", 'r') as armips_script:
+with open("../asm/hook.asm", 'r') as armips_script:
   armips_lines = armips_script.readlines()
 
-with open("patch/hook_{}.asm".format(args.version), 'w') as armips_o:
+with open("../patch/hook_{}.asm".format(args.version), 'w') as armips_o:
   for armips_line in armips_lines:
     for key, value in HooksDict.items():
       armips_line = re.sub("{{{}}}".format(key), value, armips_line)
@@ -157,12 +141,12 @@ with open("patch/hook_{}.asm".format(args.version), 'w') as armips_o:
   armips_o.write("\n")
 
 # -- For each file in scripts/, run the substitution algo.
-for filename in os.listdir("debug_scripts"):
-  with open("debug_scripts/{}".format(filename), 'r') as filename_input:
+for filename in os.listdir("../debug_scripts"):
+  with open("../debug_scripts/{}".format(filename), 'r') as filename_input:
     filename_lines = filename_input.readlines()
 
   output_filename = os.path.splitext(filename)[0]
-  with open("debug_scripts_out/{}_{}.js".format(output_filename,args.version), 'w') as filename_o:
+  with open("../debug_scripts_out/{}_{}.js".format(output_filename,args.version), 'w') as filename_o:
     for filename_line in filename_lines:
       for key, value in HooksDict.items():
         filename_line = re.sub("{{{}}}".format(key), value, filename_line)

@@ -392,7 +392,7 @@ Hooks:
       D: ,
     }
 
-  SM64_FuncCalledAtSoundInitHook:
+  SM64_FuncCalledAtSoundInitHook: # N/A to J/U.
     Addresses: {
       J: ,
       U: ,

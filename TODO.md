@@ -52,6 +52,7 @@ Ideas for a future release:
    - [ ] Spawn fat penguin (toggle).
    - [ ] TTC clock speed.
    - [ ] WDW water level.
+   - [ ] Wireframe viewer.
    - [X] Non-stop (toggle).
    - [X] Special triple jump toggle.
    - [ ] Save best times (with and without 100c star) to SD card ~~(or EEPROM)~~.

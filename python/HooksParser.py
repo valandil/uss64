@@ -65,6 +65,9 @@ class HooksParser(object):
   def getUSS64Hooks(self):
     return self.uss64_hooks
 
+  def getSM64Hooks(self):
+    return self.sm64_hooks
+
   def parseInputFiles(self):
     """
     Parses the hooks file to determine the #include directives to add to the
@@ -247,3 +250,52 @@ class HooksParser(object):
     sm64_c += self.parseFunctionDefinitions()
 
     return sm64_c
+
+  def parseVariableAddresses(self,version):
+    """
+    Generates a new dictionary where the keys are the variables,
+    and the values are the addresses for a specific version.
+    """
+    varAddrs = {}
+
+    for k, v in self.sm64_hooks['Variables'].items():
+      varAddrs[k] = "0x{:08X}".format(v['Addresses'][version])
+
+    return varAddrs
+
+  def parseFunctionAddresses(self,version):
+    """
+    Generates a new dictionary where the keys are the function names,
+    and the values are the addresses for a specific version.
+    """
+    funcAddrs = {}
+
+    for k, v in self.sm64_hooks['Functions'].items():
+      funcAddrs[k] = "0x{:08X}".format(v['Addresses'][version])
+
+    return funcAddrs
+
+  def parseHookAddresses(self,version):
+    """
+    Generates a new dictionary where the keys are the hook names, and the values
+    are the addresses for a specific version.
+    """
+
+    hookAddrs = {}
+
+    for k, v in self.sm64_hooks['Hooks'].items():
+      if v['Addresses'][version] is not None:
+        hookAddrs[k] = "0x{:08X}".format(v['Addresses'][version])
+
+    return hookAddrs
+
+  def getAllAddresses(self,version):
+    """
+    Returns a dictionary of all strings that are replaced in armips input files.
+    """
+
+    strings_to_addrs = {**self.parseVariableAddresses(version),
+                        **self.parseFunctionAddresses(version),
+                        **self.parseHookAddresses(version)}
+
+    return strings_to_addrs

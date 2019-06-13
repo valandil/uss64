@@ -31,12 +31,12 @@ SM64_ROMMainHook             equ {SM64_ROMMainHook}
 SM64_CleanUpDisplayListHook  equ {SM64_CleanUpDisplayListHook}
 SM64_SoundInitHook           equ {SM64_SoundInitHook}
 SM64_DMACopy                 equ {SM64_DMACopy}
-SM64_osInvalDCache           equ {osInvalDCache_addr}
-USS64_DisplayAddr            equ {USS64_DisplayAddr}
+SM64_osInvalDCache           equ {osInvalDCache}
+USS64_DisplayAddr            equ {USS64_DisplayHook}
 SM64_interaction_star_hook1  equ {SM64_interaction_star_hook1}
 SM64_interaction_star_hook2  equ {SM64_interaction_star_hook2}
-USS64_interaction_star_hook1 equ {USS64_interaction_star_hook1}
-USS64_interaction_star_hook2 equ {USS64_interaction_star_hook2}
+USS64_interaction_star_hook1 equ {USS64_Interaction_Star_Hook_1}
+USS64_interaction_star_hook2 equ {USS64_Interaction_Star_Hook_2}
 
 .open SM64_ROM, USS64_ROM, SM64_RAMEntryPoint
 

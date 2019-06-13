@@ -16,8 +16,8 @@ LD                := $(CROSS)g++
 OBJCOPY           := $(CROSS)objcopy
 NM                := $(CROSS)nm
 PYTHON            := python
-PARSEHOOKS        := ParseHooks.py
-GENERATEHOOKS     := GenerateHooks.py
+PARSEHOOKS        := python/ParseHooks.py
+GENERATEHOOKS     := python/GenerateHooks.py
 GRC               := AS=$(CROSS)as $(TOOLS_PREFIX)grc
 N64CHECKSUM       := n64cksum
 XDELTA            := xdelta3
@@ -104,7 +104,7 @@ list:
 
 .PHONY: clean list
 
-src/sm64.h: $(PARSEHOOKS)
+src/sm64.h:
 	$(PYTHON) $(PARSEHOOKS)
 
 scripts: GenerateHooks
@@ -202,7 +202,7 @@ $$(RES_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 endif
 
 GenerateHooks-$(1)    : $$(ELF-$(1)) | $$(DEBUG_SCRIPTS_OUT)/ $$(PATCHDIR)/
-	$$(PYTHON) $$(GENERATEHOOKS) -vv $$(ELF-$(1)) $$(VERSION-$(1)) --mips64-nm=$$(CROSS)nm --mips64-gcc=$$(CROSS)gcc
+	$$(PYTHON) $$(GENERATEHOOKS) -vv --elf ../$$(ELF-$(1)) --version $$(VERSION-$(1)) --mips64-nm $$(CROSS)nm --sm64-hooks ../sm64_hooks.yml --uss64-hooks ../uss64_hooks.yml
 
 .ONESHELL:
 patch-$(1)            : GenerateHooks-$(1)
