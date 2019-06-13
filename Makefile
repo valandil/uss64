@@ -15,7 +15,7 @@ CXX               := $(CROSS)g++
 LD                := $(CROSS)g++
 OBJCOPY           := $(CROSS)objcopy
 NM                := $(CROSS)nm
-PYTHON            := python
+PYTHON            := python3
 PARSEHOOKS        := python/ParseHooks.py
 GENERATEHOOKS     := python/GenerateHooks.py
 GRC               := AS=$(CROSS)as $(TOOLS_PREFIX)grc
@@ -202,7 +202,7 @@ $$(RES_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 endif
 
 GenerateHooks-$(1)    : $$(ELF-$(1)) | $$(DEBUG_SCRIPTS_OUT)/ $$(PATCHDIR)/
-	$$(PYTHON) $$(GENERATEHOOKS) -vv --elf ../$$(ELF-$(1)) --version $$(VERSION-$(1)) --mips64-nm $$(CROSS)nm --sm64-hooks ../sm64_hooks.yml --uss64-hooks ../uss64_hooks.yml
+	$$(PYTHON) $$(GENERATEHOOKS) -vv --elf $$(ELF-$(1)) --version $$(VERSION-$(1)) --mips64-nm $$(CROSS)nm --sm64-hooks sm64_hooks.yml --uss64-hooks uss64_hooks.yml
 
 .ONESHELL:
 patch-$(1)            : GenerateHooks-$(1)

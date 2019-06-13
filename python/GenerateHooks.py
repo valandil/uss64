@@ -24,6 +24,7 @@ import HooksParser
 
 # ------------------------------ MAIN FUNCTION ------------------------------ #
 # -- Change directory to where the script is located.
+callPath =os.getcwd()
 os.chdir(sys.path[0])
 
 # ----------------------------- Argument Parsing ---------------------------- #
@@ -55,7 +56,8 @@ if (args.verbose == 1):
 
 # ---------------------------- Parse Hooks Files ---------------------------- #
 
-hooksParser = HooksParser.HooksParser(args.sm64_hooks,args.uss64_hooks)
+hooksParser = HooksParser.HooksParser(os.path.join(callPath,args.sm64_hooks),
+                                      os.path.join(callPath,args.uss64_hooks))
 
 # -- Parse the addresses of the hooks.
 uss64_hooks = hooksParser.getUSS64Hooks()
@@ -88,20 +90,7 @@ for k in uss64_addrs.keys():
 if (args.verbose > 1):
   print(uss64_addrs)
 
-# -- Generate the list of strings that we parse for and replace with
-# -- addresses in the armips input files.
-sm64_hooks = hooksParser.getSM64Hooks()
-
-HooksDict = {**hooksParser.getAllAddresses(args.version),
-             **uss64_addrs}
-
-# -- Version strings, and file paths.
-FileNames = ["USS64_BIN",    \
-             "SM64_ROM",     \
-             "USS64_ROM",    \
-             "SM64_VERSION"
-             ]
-
+# -- Define paths and filenames that need to be replaced.
 # -- Determine the full path to uss64.bin.
 sub_cmd = "readlink -f {}".format(args.elf)
 bin_name = os.path.splitext(subprocess.check_output(sub_cmd, shell=True).strip().decode("utf-8"))[0]+".bin"
@@ -110,21 +99,20 @@ bin_name = os.path.splitext(subprocess.check_output(sub_cmd, shell=True).strip()
 if (sys.platform == "msys"):
   bin_name = r"c:\\msys64\\"+bin_name
 
-# -- Final names of the output files.
-FilesToReplace = []
-FilesToReplace.append(bin_name)
-FilesToReplace += ["SM64_{}".format(args.version), \
-                  "uss64_{}".format(args.version), \
-                  "SM64_{}".format(args.version), \
-                 ]
+PathFileNameDict = {"USS64_BIN": bin_name,
+                    "SM64_ROM": "SM64_{}".format(args.version),
+                    "USS64_ROM": "uss64_{}".format(args.version),
+                    "SM64_VERSION": "SM64_{}".format(args.version)
+                    }
 
-names = FileNames
-addrs = FilesToReplace
-FileNameDict = dict(zip(names,addrs))
+# -- Generate the list of strings that we parse for and replace with
+# -- addresses in the armips input files.
+sm64_hooks = hooksParser.getSM64Hooks()
 
 # -- Bring everything together.
-for k, v in FileNameDict.items():
-  HooksDict[k] = v
+HooksDict = {**hooksParser.getAllAddresses(args.version),
+             **uss64_addrs,
+             **PathFileNameDict}
 
 if (args.verbose == 2):
   print(HooksDict)
