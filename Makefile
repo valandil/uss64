@@ -95,6 +95,7 @@ PATCHES           = $(foreach v,$(USS64_VERSIONS),patch-uss64-$(v))
 # -- Targets
 all:  $(USS64) $(HOOKS) $(PATCHES)
 
+# -- List all possible targets.
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
@@ -167,19 +168,11 @@ $$(USS64_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % src/sm64.h | $$$$(dir $$$$@)
 $$(USS64_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
 $$(USS64_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
-ifneq ($(3),SM64_S)
-$$(USS64_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
-endif
-
 $$(STD_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(STD_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
 $$(STD_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
-
-ifneq ($(3),SM64_S)
-$$(STD_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
-endif
 
 $$(GZ_OBJECTS-$(1))   : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
@@ -187,18 +180,18 @@ $$(GZ_OBJECTS-$(1))   : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 $$(GZ_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
 $$(GZ_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
-ifneq ($(3),SM64_S)
-$$(GZ_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
-endif
-
 $$(RES_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o  : % | $$$$(dir $$$$@)
 	$$(GRC) $$< -d $$(RESDESC) -o $$@
 
 $$(RES_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
 $$(RES_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
+# -- Use F3D_BETA GBI for all versions except Shindou.
 ifneq ($(3),SM64_S)
+$$(USS64_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
+$$(STD_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 $$(RES_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
+$$(GZ_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 endif
 
 GenerateHooks-$(1)    : $$(ELF-$(1)) | $$(DEBUG_SCRIPTS_OUT)/ $$(PATCHDIR)/
