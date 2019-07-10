@@ -22,10 +22,10 @@ class HooksParser(object):
     uss64_hooks_f = uss64_hooks
 
     with open(sm64_hooks_f, 'r') as sm64_hooks_h:
-      self.sm64_hooks = yaml.load(sm64_hooks_h.read())
+      self.sm64_hooks = yaml.load(sm64_hooks_h.read(),Loader=yaml.FullLoader)
 
     with open(uss64_hooks_f, 'r') as uss64_hooks_h:
-      self.uss64_hooks = yaml.load(uss64_hooks_h.read())
+      self.uss64_hooks = yaml.load(uss64_hooks_h.read(),Loader=yaml.FullLoader)
 
     # -- Determine the maximum lengths of some sets of strings
     # -- in order to be able to pretty print.

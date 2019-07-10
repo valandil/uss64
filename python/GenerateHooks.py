@@ -24,7 +24,7 @@ import HooksParser
 
 # ------------------------------ MAIN FUNCTION ------------------------------ #
 # -- Change directory to where the script is located.
-callPath =os.getcwd()
+callPath = os.getcwd()
 os.chdir(sys.path[0])
 
 # ----------------------------- Argument Parsing ---------------------------- #
@@ -32,7 +32,8 @@ os.chdir(sys.path[0])
 parser = argparse.ArgumentParser()
 parser.add_argument("--verbose", "-v",
                     action="count",
-                    help="Increase the verbosity of the script.")
+                    help="Increase the verbosity of the script.",
+                    default=0)
 parser.add_argument("--mips64-nm",
                     type=str,
                     default="mips64-nm",
@@ -51,13 +52,17 @@ parser.add_argument("--version",
                     help="Version of the game to hook into.")
 args = parser.parse_args()
 
+# -- Cleanup arguments
+args.sm64_hooks = os.path.join(callPath, args.sm64_hooks)
+args.uss64_hooks = os.path.join(callPath, args.uss64_hooks)
+args.elf = os.path.join(callPath, args.elf)
 if (args.verbose == 1):
   print(args.version)
 
 # ---------------------------- Parse Hooks Files ---------------------------- #
 
-hooksParser = HooksParser.HooksParser(os.path.join(callPath,args.sm64_hooks),
-                                      os.path.join(callPath,args.uss64_hooks))
+hooksParser = HooksParser.HooksParser(args.sm64_hooks,
+                                      args.uss64_hooks)
 
 # -- Parse the addresses of the hooks.
 uss64_hooks = hooksParser.getUSS64Hooks()

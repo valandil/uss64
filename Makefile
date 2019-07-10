@@ -8,25 +8,25 @@
 
 # Binaries
 ARMIPS            := armips
-CROSS             ?= mips64-
-TOOLS_PREFIX      ?= /opt/n64/bin/
-CC                := $(CROSS)gcc
-CXX               := $(CROSS)g++
-LD                := $(CROSS)g++
-OBJCOPY           := $(CROSS)objcopy
-NM                := $(CROSS)nm
+CROSS             ?= mips64
+TOOLS_PREFIX      ?= /usr/bin/
+CC                := $(CROSS)-gcc
+CXX               := $(CROSS)-g++
+LD                := $(CROSS)-g++
+OBJCOPY           := $(CROSS)-objcopy
+NM                := $(CROSS)-nm
 PYTHON            := python3
 PARSEHOOKS        := python/ParseHooks.py
 GENERATEHOOKS     := python/GenerateHooks.py
-GRC               := AS=$(CROSS)as $(TOOLS_PREFIX)grc
+GRC               := AS=$(CROSS)-as $(TOOLS_PREFIX)grc
 N64CHECKSUM       := n64cksum
 XDELTA            := xdelta3
 
-# Compiler/linker flags (verify that -mabi=32 is necessary).
-N64_SYSROOT      ?= /opt/n64/mips64/n64-sysroot/usr/
+# Compiler/linker flags.
+N64_SYSROOT      ?= /usr/$(CROSS)/n64-sysroot/usr/
 CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -mno-check-zero-division -mdivide-breaks                   \
-                    $(GBI_VERSION)                                                 \
+                    $(GBI_VERSION)                                             \
                     -DZ64_VERSION=Z64_OOT10                                    \
                     -DSETTINGS_HEADER=../../../src/settings.h                  \
                     -I ${N64_SYSROOT}/include/                                 \
@@ -37,6 +37,8 @@ CXXFLAGS          = -std=gnu++14 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32\
                     $(GBI_VERSION)
 LDSCRIPT          = $(N64_SYSROOT)/lib/gl-n64.ld
 LDFLAGS           = -T $(LDSCRIPT) -nostartfiles -specs=nosys.specs            \
+                    -march=vr4300 -mtune=vr4300 -mabi=32 -mdivide-breaks       \
+                    -mno-check-zero-division                                   \
                     -Wl,--gc-sections                                          \
                     -Wl,--defsym,start=0x80400000
 
@@ -57,8 +59,8 @@ USS64FILES        = $(SRCDIR)/uss64_commands.c $(SRCDIR)/uss64.c               \
                     $(SRCDIR)/settings.c $(SRCDIR)/uss64_settings.c            \
                     $(SRCDIR)/uss64_warps.c $(SRCDIR)/uss64_timer.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
-				            $(N64_SYSROOT)/include/vector/vector.c                     \
-				            $(N64_SYSROOT)/include/startup.c                           \
+				            $(N64_SYSROOT)/include/vector/vector.c         \
+				            $(N64_SYSROOT)/include/startup.c               \
 				            $(N64_SYSROOT)/include/list/list.c
 STDHEADERS       := $(patsubst %.c, %.h, $(STDFILES))
 STDHEADERS       += $(N64_SYSROOT)/include/n64.h
@@ -195,7 +197,7 @@ $$(GZ_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 endif
 
 GenerateHooks-$(1)    : $$(ELF-$(1)) | $$(DEBUG_SCRIPTS_OUT)/ $$(PATCHDIR)/
-	$$(PYTHON) $$(GENERATEHOOKS) -vv --elf $$(ELF-$(1)) --version $$(VERSION-$(1)) --mips64-nm $$(CROSS)nm --sm64-hooks sm64_hooks.yml --uss64-hooks uss64_hooks.yml
+	$$(PYTHON) $$(GENERATEHOOKS) --elf $$(ELF-$(1)) --version $$(VERSION-$(1)) --mips64-nm $$(CROSS)-nm --sm64-hooks sm64_hooks.yml --uss64-hooks uss64_hooks.yml
 
 .ONESHELL:
 patch-$(1)            : GenerateHooks-$(1)

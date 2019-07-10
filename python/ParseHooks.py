@@ -20,8 +20,9 @@ import HooksParser
 callPath = os.getcwd()
 os.chdir(sys.path[0])
 
-hooksParser = HooksParser.HooksParser(callPath+'sm64_hooks.yml',
-	                                  callPath+'uss64_hooks.yml')
+hooksParser = HooksParser.HooksParser(os.path.join(callPath,'sm64_hooks.yml'),
+	                                    os.path.join(callPath,'uss64_hooks.yml')
+                                      )
 
 sm64_h = hooksParser.generateSM64Header()
 sm64_c = hooksParser.generateSM64CFile()
