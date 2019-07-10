@@ -8,24 +8,26 @@
 
 # Binaries
 ARMIPS            := armips
-CROSS             ?= mips64-
-TOOLS_PREFIX      ?= /opt/n64/bin/
-CC                := $(CROSS)gcc
-CXX               := $(CROSS)g++
-LD                := $(CROSS)g++
-OBJCOPY           := $(CROSS)objcopy
-NM                := $(CROSS)nm
-PYTHON            := python
-GENERATEHOOKS     := GenerateHooks.py
-GRC               := AS=$(CROSS)as $(TOOLS_PREFIX)grc
+CROSS             ?= mips64
+TOOLS_PREFIX      ?= /usr/bin/
+CC                := $(CROSS)-gcc
+CXX               := $(CROSS)-g++
+LD                := $(CROSS)-g++
+OBJCOPY           := $(CROSS)-objcopy
+NM                := $(CROSS)-nm
+GBI_VERSION       := -DF3D_GBI
+PYTHON            := python3
+PARSEHOOKS        := python/ParseHooks.py
+GENERATEHOOKS     := python/GenerateHooks.py
+GRC               := AS=$(CROSS)-as $(TOOLS_PREFIX)grc
 N64CHECKSUM       := n64cksum
 XDELTA            := xdelta3
 
-# Compiler/linker flags (verify that -mabi=32 is necessary).
-N64_SYSROOT      ?= /opt/n64/mips64/n64-sysroot/usr/
+# Compiler/linker flags.
+N64_SYSROOT      ?= /usr/$(CROSS)/n64-sysroot/usr/
 CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -mno-check-zero-division -mdivide-breaks                   \
-                    $(GRUCODE)                                                 \
+                    $(GBI_VERSION)                                             \
                     -DZ64_VERSION=Z64_OOT10                                    \
                     -DSETTINGS_HEADER=../../../src/settings.h                  \
                     -I ${N64_SYSROOT}/include/                                 \
@@ -33,9 +35,11 @@ CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -I $(CURDIR)                                               \
                     $(SM64_VERSION_FLAG)
 CXXFLAGS          = -std=gnu++14 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32\
-                    $(GRUCODE)
+                    $(GBI_VERSION)
 LDSCRIPT          = $(N64_SYSROOT)/lib/gl-n64.ld
 LDFLAGS           = -T $(LDSCRIPT) -nostartfiles -specs=nosys.specs            \
+                    -march=vr4300 -mtune=vr4300 -mabi=32 -mdivide-breaks       \
+                    -mno-check-zero-division                                   \
                     -Wl,--gc-sections                                          \
                     -Wl,--defsym,start=0x80400000
 
@@ -56,9 +60,9 @@ USS64FILES        = $(SRCDIR)/uss64_commands.c $(SRCDIR)/uss64.c               \
                     $(SRCDIR)/settings.c $(SRCDIR)/uss64_settings.c            \
                     $(SRCDIR)/uss64_warps.c $(SRCDIR)/uss64_timer.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
-				            $(N64_SYSROOT)/include/vector/vector.c                     \
-				            $(N64_SYSROOT)/include/startup.c                           \
-				            $(N64_SYSROOT)/include/list/list.c
+				$(N64_SYSROOT)/include/vector/vector.c                     \
+				$(N64_SYSROOT)/include/startup.c                           \
+				$(N64_SYSROOT)/include/list/list.c
 STDHEADERS       := $(patsubst %.c, %.h, $(STDFILES))
 STDHEADERS       += $(N64_SYSROOT)/include/n64.h
 GZFILES           = gz/src/gz/gfx.c                                            \
@@ -94,6 +98,7 @@ PATCHES           = $(foreach v,$(USS64_VERSIONS),patch-uss64-$(v))
 # -- Targets
 all:  $(USS64) $(HOOKS) $(PATCHES)
 
+# -- List all possible targets.
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
@@ -102,6 +107,9 @@ list:
 	mkdir -p $@
 
 .PHONY: clean list
+
+src/sm64.h:
+	$(PYTHON) $(PARSEHOOKS)
 
 scripts: GenerateHooks
 	cp $(DEBUG_SCRIPTS_OUT)/uss64* $(EMU_SCRIPTDIR)
@@ -157,48 +165,36 @@ $$(BIN-$(1))          : $$(ELF-$(1)) | $$$$(dir $$$$@)
 $$(ELF-$(1))          : $$(OBJ-$(1)) | $$$$(dir $$$$@)
 	$$(LD) $$(LDFLAGS) $$^ -o $$@
 
-$$(USS64_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
+$$(USS64_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % src/sm64.h | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(USS64_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(USS64_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
-
-ifneq ($(3),SM64_S)
-$$(USS64_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
-endif
 
 $$(STD_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(STD_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(STD_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
-
-ifneq ($(3),SM64_S)
-$$(STD_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
-endif
 
 $$(GZ_OBJECTS-$(1))   : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(GZ_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(GZ_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
-
-ifneq ($(3),SM64_S)
-$$(GZ_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
-endif
 
 $$(RES_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o  : % | $$$$(dir $$$$@)
 	$$(GRC) $$< -d $$(RESDESC) -o $$@
 
 $$(RES_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(RES_OBJECTS-$(1)): GRUCODE = -DF3D_GBI
 
+# -- Use F3D_BETA GBI for all versions except Shindou.
 ifneq ($(3),SM64_S)
-$$(RES_OBJECTS-$(1)) : GRUCODE += -DF3D_BETA
+$$(USS64_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
+$$(STD_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
+$$(RES_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
+$$(GZ_OBJECTS-$(1)) : GBI_VERSION += -DF3D_BETA
 endif
 
 GenerateHooks-$(1)    : $$(ELF-$(1)) | $$(DEBUG_SCRIPTS_OUT)/ $$(PATCHDIR)/
-	$$(PYTHON) $$(GENERATEHOOKS) -vv $$(ELF-$(1)) $$(VERSION-$(1)) --mips64-nm=$$(CROSS)nm --mips64-gcc=$$(CROSS)gcc
+	$$(PYTHON) $$(GENERATEHOOKS) --elf $$(ELF-$(1)) --version $$(VERSION-$(1)) --mips64-nm $$(CROSS)-nm --sm64-hooks sm64_hooks.yml --uss64-hooks uss64_hooks.yml
 
 .ONESHELL:
 patch-$(1)            : GenerateHooks-$(1)

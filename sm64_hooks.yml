@@ -1,0 +1,428 @@
+Versions:
+  - J   # Japanese release
+  - U   # American release
+  - S   # Shindou
+  - E   # PAL
+  - Q   # iQue
+  - D   # 64DD
+
+InputFiles:
+  System:
+  Local:
+  - "input.h"
+  - "types.h"
+
+Variables:
+  SM64_gDisplayListHead:
+    VariableType: Gfx *
+    Addresses: {
+      J:      0x80339CFC,
+      U:      0x8033B06C,
+      S:      0x8031D5B4,
+      E:      0x803092A8,
+      Q: ,
+      D: ,
+    }
+
+  SM64_gPlayer1Controller:
+    VariableType: Controller *
+    Addresses: {
+      J:        0x8032C6A4,
+      U:        0x8032D5E4,
+      S:        0x8030CD14,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_gPlayer2Controller:
+    VariableType: Controller *
+    Addresses: {
+      J:        0x8032C6AC,
+      U:        0x8032D5EC,
+      S:        0x8030CD1C,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_gMarioStates:
+    VariableType: struct MarioState **
+    Addresses: {
+      J:        0x80339E00,
+      U:        0x8033B170,
+      S:        0x8031D9C0,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_gMarioState:
+    VariableType: struct MarioState *
+    Addresses: {
+      J:        0x8032c9d8,
+      U:        0x8032d93c,
+      S:        0x8030D068,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_sNumVblanks:
+    VariableType:  uint32_t
+    Addresses: {
+      J:        0x8032C640,
+      U:        0x8032D580,
+      S:        0x8030CCB0,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_gSpecialTripleJump:
+    VariableType: uint8_t
+    Addresses: {
+      J:        0x8032CE34,
+      U:        0x8032DD94,
+      S:        0x8030D4C4,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_gCurrLevelNum:
+    VariableType: int16_t
+    Addresses: {
+      J:        0x8032CE98,
+      U:        0x8032DDF8,
+      S:        0x8030D528,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_sCurrPlayMode:
+    VariableType: int16_t
+    Addresses: {
+      J:        0x80339ec8,
+      U:        0x8033b238,
+      S:        0x8031DA96,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_sCurrWarpType:
+    VariableType: uint8_t
+    Addresses: {
+      J:        0x80339ed8,
+      U:        0x8033b248,
+      S:        0x8031DAA0,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+Functions:
+  PrintXY:
+    ReturnType: void
+    Arguments:
+      - uint32_t x
+      - uint32_t y
+      - const char *str
+    Addresses: {
+      J:      0x802D5BE0,
+      U:      0x802D66C0,
+      S:      0x802BB908,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  PrintInt:
+    ReturnType: void
+    Arguments:
+      - int32_t x
+      - int32_t y
+      - const char *fmt
+      - '...'
+    Addresses: {
+      J:        0x802D57F8,
+      U:        0x802D62D8,
+      S:        0x802BB620,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  GetSegmentBase:
+    ReturnType: int
+    Arguments:
+      - int32_t segment
+    Addresses: {
+      J:        0x80277970,
+      U:        0x80277F20,
+      S:        0x80271830,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SegmentedToVirtual:
+    ReturnType: void*
+    Arguments:
+      - void* addr
+    Addresses: {
+      J:        0x802779A0,
+      U:        0x80277F50,
+      S:        0x80271850,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  alloc_displaylist:
+    ReturnType: void*
+    Arguments:
+      - uint32_t size
+    Addresses: {
+      J:        0x8019CE04,
+      U:        0x8019CF44,
+      S:        0x8019C3C4,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  osInvalDCache:
+    ReturnType: void
+    Arguments:
+      - void* addr
+      - int32_t nbytes
+    Addresses: {
+      J:        0x80323480,
+      U:        0x803243B0,
+      S:        0x80303690,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  osGetCount:
+    ReturnType: uint32_t
+    Arguments:
+      - void
+    Addresses: {
+      J:        0x80327460,
+      U:        0x803283E0,
+      S:        0x80304FB0,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  func_8024924C:
+    ReturnType: void
+    Arguments:
+      - int16_t
+    Addresses: {
+      J:        0x8024924C,
+      U:        0x8024927C,
+      S:        0x8024C1BC,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  set_mario_action:
+    ReturnType: uint32_t
+    Arguments:
+    Addresses: {
+      J:        0x80252AC8,
+      U:        0x80252CF4,
+      S:        0x80254298,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  func_8024975C:
+    ReturnType: void
+    Arguments:
+      - int32_t
+    Addresses: {
+      J:        0x8024975C,
+      U:        0x8024978C,
+      S:        0x8024CDF4,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  reset_dialog_state:
+    ReturnType: void
+    Arguments:
+      - void
+    Addresses: {
+      J:        0x802d8098,
+      U:        0x802d8d90,
+      S:        0x802BD4F0,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  set_play_mode:
+    ReturnType: void
+    Arguments:
+      - int32_t
+    Addresses: {
+      J:        0x80249734,
+      U:        0x80249764,
+      S:        0x8024CDDC,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  initiate_warp:
+    ReturnType: void
+    Arguments:
+      - int16_t
+      - int16_t
+      - int16_t
+      - int32_t
+    Addresses: {
+      J:        0x8024a594,
+      U:        0x8024a700,
+      S:        0x8024DAE0,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+Hooks:
+  SM64_RAMEntryPoint:
+    Addresses: {
+      J:        0x80245000,
+      U:        0x80245000,
+      S:        0x80248000,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_DMAHookCode:
+    Addresses: {
+      J:        0x80246050,
+      U:        0x80246050,
+      S:        0x80249050,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_DMAHookJump:
+    Addresses: {
+      J:        0x8027844C,
+      U:        0x802789FC,
+      S:        0x8027207C,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_DMACopy:
+    Addresses: {
+      J:        0x80277F54,
+      U:        0x80278504,
+      S:        0x80271CB8,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_CleanUpDisplayListHook:
+    Addresses: {
+      J:        0x80247CEC,
+      U:        0x80247D1C,
+      S:        0x8024B104,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  funcCalledAtCleanUpDisplayListHook:
+    Addresses: {
+      J:        0x8024781C,
+      U:        0x8024784C,
+      S:        0x8024AD78,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_ROMPaddingStart:
+    Addresses: {
+      J:        0x00761BE0,
+      U:        0x007CC700,
+      S:        0x0079D6D0,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_ROMMainHook:
+    Addresses: {
+      J:        0x0021AFF0,
+      U:        0x0021CCE0,
+      S:        0x001F7D00,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_SoundInitHook:
+    Addresses: {
+      J:        0x802494B8,
+      U:        0x802494E8,
+      S:        0x8024C39C,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_FuncCalledAtSoundInitHook: # N/A to J/U.
+    Addresses: {
+      J:        None,
+      U:        None,
+      S:        0x802FD6B0,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_interaction_star_hook1:
+    Addresses: {
+      J:        0x8024DC1C,
+      U:        0x8024DDBC,
+      S:        0x80250634,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_interaction_star_hook2:
+    Addresses: {
+      J:        0x8024DC74,
+      U:        0x8024DE1C,
+      S:        0x80250688,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+Constants:
+  ACT_FALL_AFTER_STAR_GRAB: 0x00001904
+  ACT_STAR_DANCE_EXIT:      0x00001302
+  ACT_STAR_DANCE_NO_EXIT:   0x00001307
