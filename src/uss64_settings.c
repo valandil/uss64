@@ -94,6 +94,21 @@ static int special_triple_jump_proc(struct menu_item *item,
   return 0;
 }
 
+static int skip_intro_proc(struct menu_item *item,
+                           enum menu_callback_reason reason,
+                           void *data)
+{
+  if (reason == MENU_CALLBACK_CHANGED)
+  {
+    settings->bits.skip_intro = menu_checkbox_get(item);
+  }
+
+  else if (reason == MENU_CALLBACK_THINK)
+    menu_checkbox_set(item, settings->bits.skip_intro);
+
+  return 0;
+}
+
 static int input_display_proc(struct menu_item *item,
                               enum menu_callback_reason reason,
                               void *data)
@@ -247,6 +262,10 @@ struct menu *uss64_settings_menu(void)
   // Special triple jump
   menu_add_static(&menu, 0, ++y, "special triple jump", 0xC0C0C0);
   menu_add_checkbox(&menu, x_checkbox, y, special_triple_jump_proc, NULL);
+
+  // Skip intro
+  menu_add_static(&menu, 0, ++y, "skip intro", 0xC0C0C0);
+  menu_add_checkbox(&menu, x_checkbox, y, skip_intro_proc, NULL);
 
   // Input display
   menu_add_static(&menu, 0, ++y, "input display", 0xC0C0C0);
