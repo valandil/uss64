@@ -15,6 +15,7 @@ CXX               := $(CROSS)-g++
 LD                := $(CROSS)-g++
 OBJCOPY           := $(CROSS)-objcopy
 NM                := $(CROSS)-nm
+GBI_VERSION       := -DF3D_GBI
 PYTHON            := python3
 PARSEHOOKS        := python/ParseHooks.py
 GENERATEHOOKS     := python/GenerateHooks.py
@@ -168,25 +169,21 @@ $$(USS64_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % src/sm64.h | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(USS64_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(USS64_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
 $$(STD_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(STD_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(STD_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
 $$(GZ_OBJECTS-$(1))   : $$(OBJDIR-$(1))/%.o : % | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@
 
 $$(GZ_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(GZ_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
 $$(RES_OBJECTS-$(1))  : $$(OBJDIR-$(1))/%.o  : % | $$$$(dir $$$$@)
 	$$(GRC) $$< -d $$(RESDESC) -o $$@
 
 $$(RES_OBJECTS-$(1)): SM64_VERSION_FLAG = -D$(3)
-$$(RES_OBJECTS-$(1)): GBI_VERSION = -DF3D_GBI
 
 # -- Use F3D_BETA GBI for all versions except Shindou.
 ifneq ($(3),SM64_S)
