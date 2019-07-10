@@ -59,9 +59,9 @@ USS64FILES        = $(SRCDIR)/uss64_commands.c $(SRCDIR)/uss64.c               \
                     $(SRCDIR)/settings.c $(SRCDIR)/uss64_settings.c            \
                     $(SRCDIR)/uss64_warps.c $(SRCDIR)/uss64_timer.c
 STDFILES          = $(N64_SYSROOT)/include/grc.c                               \
-				            $(N64_SYSROOT)/include/vector/vector.c         \
-				            $(N64_SYSROOT)/include/startup.c               \
-				            $(N64_SYSROOT)/include/list/list.c
+				$(N64_SYSROOT)/include/vector/vector.c                     \
+				$(N64_SYSROOT)/include/startup.c                           \
+				$(N64_SYSROOT)/include/list/list.c
 STDHEADERS       := $(patsubst %.c, %.h, $(STDFILES))
 STDHEADERS       += $(N64_SYSROOT)/include/n64.h
 GZFILES           = gz/src/gz/gfx.c                                            \
