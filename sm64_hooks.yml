@@ -68,6 +68,29 @@ Variables:
       D: ,
     }
 
+  SM64_gHudDisplay:
+    VariableType: struct HudDisplay
+    Addresses: {
+      J:        0x80339ef0,
+      U:        0x8033b260,
+      S:        0x8031DA88,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_gSnowParticleCount:
+    VariableType: int16_t
+    Addresses: {
+      J:        0x803600a4,
+      U:        0x80361414,
+      S:        0x80343C54,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+
   SM64_sNumVblanks:
     VariableType:  uint32_t
     Addresses: {
@@ -301,6 +324,20 @@ Functions:
       D: ,
     }
 
+  save_file_set_flags:
+    ReturnType: void
+    Arguments:
+      - int32_t
+    Addresses: {
+      J:        0x80279af8,
+      U:        0x8027a0a8,
+      S:        0x8027314C,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+
 Hooks:
   SM64_RAMEntryPoint:
     Addresses: {
@@ -394,8 +431,8 @@ Hooks:
 
   SM64_FuncCalledAtSoundInitHook: # N/A to J/U.
     Addresses: {
-      J:        None,
-      U:        None,
+      J:        ,
+      U:        ,
       S:        0x802FD6B0,
       E: ,
       Q: ,
@@ -417,6 +454,76 @@ Hooks:
       J:        0x8024DC74,
       U:        0x8024DE1C,
       S:        0x80250688,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_init_level_hook:
+    Addresses: {
+      J:        0x8024B8F8,
+      U:        0x8024BA98,
+      S:        0x8024EB78,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_skip_intro_hook:
+    Addresses: {
+      J:        0x8024BA34,
+      U:        0x8024BBD4,
+      S:        0x8024ECA4,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_skip_intro_branch:
+    Addresses: {
+      J:        0x8024BA5C,
+      U:        0x8024BBFC,
+      S:        0x8024ECCC,
+      E: ,
+      Q: ,
+      D: ,
+    }
+
+  SM64_update_objects_hook:
+    Addresses: {
+      J:        0x8029D0E4,
+      U:        ,
+      S:        ,
+      E: ,
+      Q: ,
+      D: ,
+      }
+
+  SM64_respawn_objects_hook1:
+    Addresses: {
+      J:        0x8029C71C,
+      U:        0x8029CE9C,
+      S:        0x8028EC28,
+      E: ,
+      Q: ,
+      D: ,
+      }
+
+  SM64_respawn_objects_hook2:
+    Addresses: {
+      J:        0x8029C740,
+      U:        0x8029CEC0,
+      S:        0x8028EC3C,
+      E: ,
+      Q: ,
+      D: ,
+      }
+
+  SM64_lvl_reset_camera_fix_hook:
+    Addresses: {
+      J:       0x80286D2A,
+      U:       0x802872DA,
+      S:       0x8027D946,
       E: ,
       Q: ,
       D: ,

@@ -35,8 +35,15 @@ SM64_osInvalDCache           equ {osInvalDCache}
 USS64_DisplayAddr            equ {USS64_DisplayHook}
 SM64_interaction_star_hook1  equ {SM64_interaction_star_hook1}
 SM64_interaction_star_hook2  equ {SM64_interaction_star_hook2}
+SM64_skip_intro_hook         equ {SM64_skip_intro_hook}
+SM64_init_level_hook         equ {SM64_init_level_hook}
+SM64_respawn_objects_hook1   equ {SM64_respawn_objects_hook1}
+SM64_respawn_objects_hook2   equ {SM64_respawn_objects_hook2}
 USS64_interaction_star_hook1 equ {USS64_Interaction_Star_Hook_1}
 USS64_interaction_star_hook2 equ {USS64_Interaction_Star_Hook_2}
+USS64_respawn_objects_hook   equ {USS64_respawn_objects_hook}
+USS64_skip_intro_hook        equ {USS64_skip_intro_hook}
+USS64_init_level_hook        equ {USS64_init_level_hook}
 
 .open SM64_ROM, USS64_ROM, SM64_RAMEntryPoint
 
@@ -92,6 +99,21 @@ jal USS64_interaction_star_hook1
 
 .org SM64_interaction_star_hook2
 jal USS64_interaction_star_hook2
+
+// Hook into intro to skip it.
+.org SM64_skip_intro_hook
+j USS64_skip_intro_hook
+
+//// Hook into init_level.
+.org SM64_init_level_hook
+jal USS64_init_level_hook
+
+// Level Reset
+.org SM64_respawn_objects_hook1
+nop
+
+.org SM64_respawn_objects_hook2
+nop
 
 // Import the payload at the end of the ROM.
 .orga SM64_ROMPadding

@@ -62,28 +62,38 @@ void command_fileselect(void)
 void command_reload(void)
 {
 
+  // Fill Mario's health, reset flags and coins.
+  SM64_gMarioState->health = 0x0880;
+  SM64_gMarioState->flags = 0;
+  SM64_gMarioState->numCoins = 0;
+  SM64_gHudDisplay.coins = 0;
+
+  // Reset environment VFX.
+  SM64_gSnowParticleCount = 5;
+
   reset_dialog_state();
 
   initiate_warp(uss64.current_level_num & 0x7F, 0x01, 0x0A, 0);
 
-  set_play_mode(3);
+  // Change area warp type to trigger re-spawning.
+  SM64_sCurrWarpType = 0x0002;
+  uss64.command_reset_was_called = 1;
 
+  // Camera fix.
+  uint16_t * addr = (uint16_t*)SM64_lvl_reset_camera_fix_hook;
+  if (uss64.current_level_num != LEVEL_TOTWC)
+    *addr = 0x0001;
+  else
+    *addr = 0x0000;
 }
 
 void command_starselect(void)
 {
 
   reset_dialog_state();
-  initiate_warp(LEVEL_PSS & 0x7F, 0x01, 0xA, 0);
-
-  if (uss64.current_level_num != LEVEL_PSS)
-  {
-    set_play_mode(4);
-    uss64.command_starselect_was_called = 1;
-  }
-
-  else
-    set_play_mode(3);
+  initiate_warp(uss64.current_level_num & 0x7F, 0x01, 0xA, 0);
+  SM64_sCurrWarpType = 0x0001;
+  set_play_mode(4);
 }
 
 void command_resetlag(void)

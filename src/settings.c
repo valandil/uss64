@@ -36,6 +36,7 @@ void settings_load_default(void)
   d->bits.timer = 1;
   d->bits.non_stop = 0;
   d->bits.special_triple_jump = 0;
+  d->bits.skip_intro = 1;
   d->menu_x = 16;
   d->menu_y = 64;
   d->line_spacing = 1;

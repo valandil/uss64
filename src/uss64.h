@@ -87,6 +87,7 @@ struct uss64
   _Bool                 xcam_triggered;
   struct uss64_timer    timer_xcam;
   _Bool                 command_starselect_was_called;
+  uint8_t               command_reset_was_called;
   int8_t                level_num_before_warp;
   int8_t                current_level_num;
 };

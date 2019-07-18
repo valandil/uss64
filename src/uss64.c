@@ -50,6 +50,23 @@ static void print_timer(struct gfx_font* font, int x, int y, struct uss64_timer 
   gfx_mode_pop(GFX_MODE_COLOR);
 }
 
+HOOK static void init_level_hook(void)
+{
+  set_play_mode(0);
+  command_resettimer();
+  command_resetlag();
+}
+
+// This function cannot call other functions (can't touch stack)
+HOOK static void skip_intro_hook(void)
+{
+  uint32_t addr = settings->bits.skip_intro ? SM64_skip_intro_hook + 0x8
+                                            : SM64_skip_intro_branch;
+  __asm__ volatile ("j %0\n"
+                    "nop"
+                    :: "r"(addr));
+}
+
 HOOK static void interaction_star_hook1(void)
 {
   if (!settings->bits.non_stop)
@@ -274,6 +291,10 @@ HOOK static void main_hook(void)
     SM64_gSpecialTripleJump = 1;
   else
     SM64_gSpecialTripleJump = 0;
+
+  // Hack for WING_CAP
+  if (uss64.current_level_num == LEVEL_BOB)
+    SM64_gMarioState->flags |= 0x00000008;
 }
 
 static void main_return_proc(struct menu_item *item, void *data)
