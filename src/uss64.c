@@ -291,10 +291,6 @@ HOOK static void main_hook(void)
     SM64_gSpecialTripleJump = 1;
   else
     SM64_gSpecialTripleJump = 0;
-
-  // Hack for WING_CAP
-  if (uss64.current_level_num == LEVEL_BOB)
-    SM64_gMarioState->flags |= 0x00000008;
 }
 
 static void main_return_proc(struct menu_item *item, void *data)
