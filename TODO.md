@@ -18,7 +18,8 @@ Ideas for a future release:
      - [ ] Double savestates (asm)
      - [ ] Something similar to memfiles in gz, with SD card writes
    - [X] Level Select (similar to warps in gz)
-     - [ ] Not super stable. And some warps won't work depending on the current level. Should work       out warp nodes.
+     - [ ] Not super stable. And some warps won't work depending on the current
+       level. Should work out warp nodes.
    - [ ] Pre-made practice files (customizable)
      - [ ] 120 Star
      - [ ] Up RTA 74 star

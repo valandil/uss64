@@ -39,6 +39,7 @@ struct settings_bits
   uint32_t timer               : 1;
   uint32_t non_stop            : 1;
   uint32_t special_triple_jump : 1;
+  uint32_t skip_intro          : 1;
 };
 
 struct settings_data

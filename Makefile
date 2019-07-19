@@ -8,8 +8,9 @@
 
 # Binaries
 ARMIPS            := armips
-CROSS             ?= mips64
+CROSS             ?= mips64-ultra-elf
 TOOLS_PREFIX      ?= /usr/bin/
+AS                := $(CROSS)-as
 CC                := $(CROSS)-gcc
 CXX               := $(CROSS)-g++
 LD                := $(CROSS)-g++
@@ -25,6 +26,7 @@ XDELTA            := xdelta3
 
 # Compiler/linker flags.
 N64_SYSROOT      ?= /usr/$(CROSS)/n64-sysroot/usr/
+ASFLAGS           = -Wall -mtune=vr4300 -march=vr4300 -mabi=32
 CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -mno-check-zero-division -mdivide-breaks                   \
                     $(GBI_VERSION)                                             \
@@ -32,12 +34,11 @@ CFLAGS            = -std=gnu11 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32  \
                     -DSETTINGS_HEADER=../../../src/settings.h                  \
                     -I ${N64_SYSROOT}/include/                                 \
                     -I $(CURDIR)                                               \
-                    -I $(CURDIR)                                               \
                     $(SM64_VERSION_FLAG)
 CXXFLAGS          = -std=gnu++14 -Wall -O1 -mtune=vr4300 -march=vr4300 -mabi=32\
                     $(GBI_VERSION)
 LDSCRIPT          = $(N64_SYSROOT)/lib/gl-n64.ld
-LDFLAGS           = -T $(LDSCRIPT) -nostartfiles -specs=nosys.specs            \
+LDFLAGS           = -T $(LDSCRIPT) -T uss64.ld -nostartfiles -specs=nosys.specs\
                     -march=vr4300 -mtune=vr4300 -mabi=32 -mdivide-breaks       \
                     -mno-check-zero-division                                   \
                     -Wl,--gc-sections                                          \
@@ -55,6 +56,7 @@ DEBUG_SCRIPTS_OUT = debug_scripts_out
 EMU_SCRIPTDIR     = c/Users/Joey/Documents/VGs/Emulation/Project64d/Scripts
 
 # Source file lists.
+ASMFILES          = $(ASMDIR)/respawn_object_hook2.s
 USS64FILES        = $(SRCDIR)/uss64_commands.c $(SRCDIR)/uss64.c               \
                     $(SRCDIR)/sm64.c $(SRCDIR)/gz_api.c                        \
                     $(SRCDIR)/settings.c $(SRCDIR)/uss64_settings.c            \
@@ -76,12 +78,13 @@ RESFILES          = gz/res/gz/*.png
 HEADERS           = $(SRCDIR)/sm64.h
 
 # Source files variables.
+ASMSRC           := $(foreach  s, $(ASMFILES),  $(wildcard $(s)))
 USS64SRC         := $(foreach  s, $(USS64FILES),$(wildcard $(s)))
 STDSRC           := $(foreach  s, $(STDFILES),  $(wildcard $(s)))
 GZSRC            := $(foreach  s, $(GZFILES),   $(wildcard $(s)))
 RESSRC           := $(foreach  s, $(RESFILES),  $(wildcard $(s)))
 
-OBJECTS           = $(USS64_OBJECTS) $(STD_OBJECTS) $(GZ_OBJECTS) $(RES_OBJECTS)
+OBJECTS           = $(ASM_OBJECTS) $(USS64_OBJECTS) $(STD_OBJECTS) $(GZ_OBJECTS) $(RES_OBJECTS)
 
 # Versions of SM64 to inject into.
 USS64_VERSIONS    = SM64_U SM64_J SM64_S #SM64_Q SM64_E SM64_D
@@ -139,19 +142,20 @@ TARGET-NAME-$(1)      = $(2)
 OUTPUT-DIR-$(1)       = $(3)
 SRCDIR-$(1)           = $(4)
 RESDIR-$(1)           = $(5)
-OBJDIR-$(1)   	      = $(6)
+OBJDIR-$(1)   	       = $(6)
 BINDIR-$(1)           = $(7)
 
 VERSION-$(1)          = $$(shell echo $(3) | tail -c 2)
 
 # -- Variables for pattern rules.
+ASM_OBJECTS-$(1)      := $$(patsubst %, $$(OBJDIR-$(1))/%.o,$$(ASMSRC))
 USS64_OBJECTS-$(1)    := $$(patsubst %, $$(OBJDIR-$(1))/%.o,$$(USS64SRC))
 STD_OBJECTS-$(1)      := $$(patsubst %, $$(OBJDIR-$(1))/%.o,$$(STDSRC))
 GZ_OBJECTS-$(1)       := $$(patsubst %, $$(OBJDIR-$(1))/%.o,$$(GZSRC))
 RES_OBJECTS-$(1)      := $$(patsubst %, $$(OBJDIR-$(1))/%.o,$$(RESSRC))
 
 # -- Short names for the main C targets.
-OBJ-$(1)              = $$(USS64_OBJECTS-$(1)) $$(STD_OBJECTS-$(1)) $$(GZ_OBJECTS-$(1)) $$(RES_OBJECTS-$(1))
+OBJ-$(1)              = $$(ASM_OBJECTS-$(1)) $$(USS64_OBJECTS-$(1)) $$(STD_OBJECTS-$(1)) $$(GZ_OBJECTS-$(1)) $$(RES_OBJECTS-$(1))
 BIN-$(1)              = $$(BINDIR-$(1))/$$(TARGET-NAME-$(1)).bin
 ELF-$(1)              = $$(BINDIR-$(1))/$$(TARGET-NAME-$(1)).elf
 
@@ -163,7 +167,10 @@ $$(BIN-$(1))          : $$(ELF-$(1)) | $$$$(dir $$$$@)
 	$$(OBJCOPY) -S -O binary $$< $$@
 
 $$(ELF-$(1))          : $$(OBJ-$(1)) | $$$$(dir $$$$@)
-	$$(LD) $$(LDFLAGS) $$^ -o $$@
+	$$(LD) $$(LDFLAGS) -Xlinker -Map=uss64_$$(VERSION-$(1)).map $$^ -o $$@
+
+$$(ASM_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % src/sm64.h | $$$$(dir $$$$@)
+	$$(AS) $$(ASFLAGS) $$< -o $$@
 
 $$(USS64_OBJECTS-$(1)): $$(OBJDIR-$(1))/%.o : % src/sm64.h | $$$$(dir $$$$@)
 	$$(CC) $$(CFLAGS) -c $$< -o $$@

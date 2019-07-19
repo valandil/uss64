@@ -75,4 +75,14 @@ struct MarioState
     /*0xC4*/ float unkC4;
 };
 
+struct HudDisplay {
+    /*0x00*/ int16_t  lives;
+    /*0x02*/ int16_t  coins;
+    /*0x04*/ int16_t  stars;
+    /*0x06*/ int16_t  wedges;
+    /*0x08*/ int16_t  keys;
+    /*0x0A*/ int16_t  flags;
+    /*0x0C*/ uint16_t timer;
+};
+
 #endif

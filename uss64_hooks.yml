@@ -8,3 +8,7 @@ USS64_gfx_flush: gfx_flush
 USS64_Ready: uss64
 USS64_gfx_disp: gfx_disp
 USS64_gfx_disp_w: gfx_disp_w
+USS64_init_level_hook: init_level_hook
+USS64_skip_intro_hook: skip_intro_hook
+USS64_respawn_objects_hook: respawn_objects_hook
+USS64_update_objects_hook: update_objects_hook
