@@ -1,4 +1,4 @@
 [submodule "gz"]
 	path = gz
-	url = git@github.com:valandil/gz.git
+	url = https://github.com/valandil/gz.git
 

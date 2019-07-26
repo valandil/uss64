@@ -69,11 +69,18 @@ struct uss64_timer
   int        hours;
 };
 
+struct log_entry
+{
+  char                 *msg;
+  int                   age;
+};
+
 // State of the program.
 struct uss64
 {
   _Bool                 ready;
   _Bool                 menu_active;
+  struct log_entry      log[SETTINGS_LOG_MAX];
   struct menu          *menu_main;
   struct menu          *menu_global;
   int32_t               frame_counter;

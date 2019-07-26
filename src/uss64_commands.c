@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdarg.h>
 #include "uss64.h"
 #include "settings.h"
 #include "sm64.h"
@@ -52,6 +55,29 @@ void uss64_hide_menu(void)
   input_free(BUTTON_D_UP | BUTTON_D_DOWN | BUTTON_D_LEFT | BUTTON_D_RIGHT |
              BUTTON_L);
   input_reservation_set(0);
+}
+
+void uss64_log(const char *fmt, ...)
+{
+  struct log_entry *ent = &uss64.log[SETTINGS_LOG_MAX - 1];
+  if (ent->msg)
+    free(ent->msg);
+  for (int i = SETTINGS_LOG_MAX - 1; i > 0; --i)
+    uss64.log[i] = uss64.log[i - 1];
+
+  va_list va;
+  va_start(va, fmt);
+  int l = vsnprintf(NULL, 0, fmt, va);
+  va_end(va);
+
+  ent = &uss64.log[0];
+  ent->msg = malloc(l + 1);
+  if (!ent->msg)
+    return;
+  va_start(va, fmt);
+  vsprintf(ent->msg, fmt, va);
+  va_end(va);
+  ent->age = 0;
 }
 
 void command_fileselect(void)

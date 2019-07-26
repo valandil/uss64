@@ -154,9 +154,9 @@ Functions:
       - uint32_t y
       - const char *str
     Addresses: {
-      J:      0x802D5BE0,
-      U:      0x802D66C0,
-      S:      0x802BB908,
+      J:        0x802D5BE0,
+      U:        0x802D66C0,
+      S:        0x802BB908,
       E: ,
       Q: ,
       D: ,
@@ -429,10 +429,10 @@ Hooks:
       D: ,
     }
 
-  SM64_FuncCalledAtSoundInitHook: # N/A to J/U.
+  SM64_FuncCalledAtSoundInitHook: # N/A to J/U, unsure for others.
     Addresses: {
-      J:        ,
-      U:        ,
+      J: , # N/A
+      U: , # N/A
       S:        0x802FD6B0,
       E: ,
       Q: ,

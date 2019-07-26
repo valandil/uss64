@@ -1,3 +1,4 @@
+#include "sm64.h"
 #include "settings.h"
 #include "gz/src/gz/input.h"
 #include "gz/src/gz/gz_api.h"
@@ -32,6 +33,7 @@ void settings_load_default(void)
   d->bits.font_resource = RES_FONT_PRESSSTART2P;
   d->bits.drop_shadow = 1;
   d->bits.input_display = 1;
+  d->bits.log = 1;
   d->bits.lag_counter = 1;
   d->bits.timer = 1;
   d->bits.non_stop = 0;
@@ -42,6 +44,8 @@ void settings_load_default(void)
   d->line_spacing = 1;
   d->input_display_x = 16;
   d->input_display_y = GAME_SCREEN_HEIGHT - 12;
+  d->log_x = GAME_SCREEN_WIDTH - 12;
+  d->log_y = GAME_SCREEN_HEIGHT - 14;
   d->lag_counter_x = GAME_SCREEN_WIDTH - 12;
   d->lag_counter_y = GAME_SCREEN_HEIGHT - 12;
   d->timer_x = GAME_SCREEN_WIDTH - 60;

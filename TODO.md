@@ -29,12 +29,12 @@ Ideas for a future release:
      - [ ] Tippy RTA 58
  - Timer
    - [ ] Customize/remove TIME text.
-   - [ ] Toggle reset timer at level reset/star select/with L.
-   - [ ] Slide fix
-   - [ ] Show timer in castle
+   - [X] Toggle reset timer at level reset/star select/with L.
+   - [X] Slide fix
+   - [X] Show timer in castle
    - [ ] Centiseconds (toggle)
    - [ ] Show timer always, star grab, x-cam (toggle).
-   - [ ] Stop timer star grab, x-cam (show both).
+   - [X] Stop timer star grab, x-cam (show both).
  - HUD elements
    - [X] Lag counter, reset at level reset/star select/with L.
    - [ ] Lag as lives
