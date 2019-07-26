@@ -154,9 +154,9 @@ Functions:
       - uint32_t y
       - const char *str
     Addresses: {
-      J:      0x802D5BE0,
-      U:      0x802D66C0,
-      S:      0x802BB908,
+      J:        0x802D5BE0,
+      U:        0x802D66C0,
+      S:        0x802BB908,
       E: ,
       Q: ,
       D: ,
